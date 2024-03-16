@@ -1,1 +1,1 @@
-# hiveos
+# Qubic GPU HiveOs
