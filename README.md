@@ -1,1 +1,1 @@
-# Qubic GPU HiveOs
+# Qubic HiveOs Miner
