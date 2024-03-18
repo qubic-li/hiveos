@@ -1,7 +1,7 @@
 # Qubic HiveOs Miner (WIP)
 This is the integration of the main client from qubic.li to HiveOs.
 
-Use URL in flight sheet: https://github.com/qubic-li/hiveos/releases/download/v1.8.9/qubminer-1.8.9_1.tar.gz
+Use URL in flight sheet: https://github.com/qubic-li/hiveos/releases/download/v1.8.9_1/qubminer-1.8.9_1.tar.gz
 
 ## Qubic Resources
 
@@ -54,7 +54,7 @@ Extra config arguments exemple:
 ### Miner Configuration
 
 - **Miner name:** Automatically filled with the installation URL.
-- **Installation URL:** `https://github.com/qubic-li/hiveos/releases/download/v1.8.9/qubminer-1.8.9_1.tar.gz`
+- **Installation URL:** `https://github.com/qubic-li/hiveos/releases/download/v1.8.9_1/qubminer-1.8.9_1.tar.gz`
 - **Hash algorithm:** Not used, leave as `----`.
 - **Wallet and worker template:** Worker name. Value of `"alias"` in `appsettings.json`.
 - **Pool URL:** Value of `"baseUrl"` in `appsettings.json`. Use `https://mine.qubic.li/` for the pool `app.qubic.li`.
