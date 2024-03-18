@@ -1,47 +1,79 @@
-# Функция для обработки пользовательской конфигурации
+# Function for processing user configuration
 process_user_config() {
     while IFS= read -r line; do
         [[ -z $line ]] && continue
+        # Check if the line starts with 'nvtool ' and execute it using eval
         if [[ ${line:0:7} = "nvtool " ]]; then
             eval "$line"
         else
-            Settings=$(jq -s '.[0] * .[1]' <<< "$Settings {$line}")
+            # Extract parameter and its value from the configuration line
+            param=$(awk -F':' '{gsub(/\"/, ""); gsub(/[[:space:]]/, ""); print $1}' <<< "$line")
+            value=$(awk -F':' '{gsub(/\"/, ""); gsub(/[[:space:]]/, ""); print substr($0, length($1) + 2)}' <<< "$line")
+
+            # Convert parameter to uppercase
+            param_high=$(echo "$param" | tr '[:lower:]' '[:upper:]')
+
+            # Perform replacements in the parameter
+            modified_param=$(echo "$param_high" | awk '{
+                gsub("PAYOUTID", "payoutId");
+                gsub("AMOUNTOFTHREADS", "amountOfThreads");
+                gsub("ACCESSTOKEN", "accessToken");
+                gsub("ALLOWHWINFOCOLLECT", "allowHwInfoCollect");
+                gsub("HUGEPAGES", "hugePages");
+                gsub("CPUONLY", "cpuOnly");
+                gsub("ALIAS", "alias");
+                gsub("OVERWRITES", "overwrites");
+                print $0;
+            }')
+
+            # Check if modifications were made, if not, use original parameter
+            [[ "$param" != "$modified_param" ]] && param=$modified_param
+
+            # Check if value exists before updating Settings
+            if [[ ! -z "$value" ]]; then
+              if [[ "$param" == "overwrites" ]]; then
+                    Settings=$(jq -s '.[0] * .[1]' <<< "$Settings {$line}")
+                else
+                    # Update settings with the extracted parameter and its value
+                    if [[ "$value" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
+                        Settings=$(jq --arg param "$param" --argjson value "$value" '.[$param] = ($value | tonumber)' <<< "$Settings")
+                    else
+                        Settings=$(jq --arg param "$param" --arg value "$value" '.[$param] = $value' <<< "$Settings")
+                    fi
+                fi
+            fi
         fi
     done <<< "$CUSTOM_USER_CONFIG"
 }
 
-# Основная логика скрипта
+# Main script logic
 
-# Обработка глобальных настроек
-conf=$(cat "/hive/miners/custom/$CUSTOM_NAME/appsettings_global.json" | envsubst)
-Settings=$(jq -r .Settings <<< "$conf")
+# Processing global settings
+Settings=$(jq -r '.Settings' "/hive/miners/custom/$CUSTOM_NAME/appsettings_global.json" | envsubst)
 
-# Обработка шаблона
+# Processing the template
 if [[ ! -z $CUSTOM_TEMPLATE ]]; then
-    if [[ ${#CUSTOM_TEMPLATE} -lt 60 ]]; then
-        Settings=$(jq --null-input --argjson Settings "$Settings" --arg alias "$CUSTOM_TEMPLATE" '$Settings + {$alias}')
-    elif [[ ${#CUSTOM_TEMPLATE} -eq 60 ]]; then
-        Settings=$(jq --null-input --argjson Settings "$Settings" --arg payoutId "$CUSTOM_TEMPLATE" '$Settings + {$payoutId}')
-    else
-        wallet=${CUSTOM_TEMPLATE%.*}
-        len=${#wallet}
-        alias=${CUSTOM_TEMPLATE:len}
-        alias=${alias#*.}
-        Settings=$(jq --null-input --argjson Settings "$Settings" --arg alias "$alias" '$Settings + {$alias}')
-        if [[ ${#wallet} -eq 60 ]]; then
-            Settings=$(jq --null-input --argjson Settings "$Settings" --arg payoutId "$wallet" '$Settings + {$payoutId}')
-        else
-            Settings=$(jq --null-input --argjson Settings "$Settings" --arg accessToken "$wallet" '$Settings + {$accessToken}')
-        fi
+    Settings=$(jq --null-input --argjson Settings "$Settings" --arg alias "$CUSTOM_TEMPLATE" '$Settings + {$alias}')
+fi
+
+# Processing user configuration
+[[ ! -z $CUSTOM_USER_CONFIG ]] && process_user_config
+
+# Additional check and modification in the Settings for CPU mining
+if [[ $(jq '.cpuOnly == "yes" or .amountOfThreads != 0' <<< "$Settings") == true ]]; then
+   Settings=$(jq '.allowHwInfoCollect = false | del(.overwrites.CUDA)' <<< "$Settings")
+fi
+
+# Check and modify Settings for hugePages parameter
+if [[ $(jq '.hugePages' <<< "$Settings") != null ]]; then
+    hugePages=$(jq -r '.hugePages' <<< "$Settings")
+    if [[ ! -z $hugePages && $hugePages -gt 0 ]]; then
+        eval "/usr/sbin/sysctl -w vm.nr_hugepages=$hugePages"
     fi
 fi
 
-# Обработка пользовательской конфигурации
-[[ ! -z $CUSTOM_USER_CONFIG ]] && process_user_config
-
-# Добавление настроек URL
+# Adding URL settings
 [[ ! -z $CUSTOM_URL ]] && Settings=$(jq --null-input --argjson Settings "$Settings" --arg baseUrl "$CUSTOM_URL" '$Settings + {$baseUrl}')
 
-# Формирование конечной конфигурации
-conf=$(jq --null-input --argjson Settings "$Settings" '{$Settings}')
-echo "$conf" | jq . > "$CUSTOM_CONFIG_FILENAME"
+# Forming the final configuration
+echo "{\"Settings\":$Settings}" | jq . > "$CUSTOM_CONFIG_FILENAME"
