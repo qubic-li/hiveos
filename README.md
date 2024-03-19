@@ -16,7 +16,7 @@ Use URL in flight sheet: https://github.com/qubic-li/hiveos/releases/download/v1
 - To run the Qubic miner, you need the beta version of HiveOS.
 `/hive/sbin/hive-replace --list`  (choice 2/ yes to apply -- better to start this fresh install if you'r stuck)
 - GLIBC >=2.34
-```apt update && apt upgrade -y && echo "deb http://archive.ubuntu.com/ubuntu jammy main" >> /etc/apt/sources.list && apt update && apt install tmux -y && apt install libc6 -y && sed -i '/deb http://archive.ubuntu.com/ubuntu jammy main/d' /etc/apt/sources.list && apt update``` (answer yes to any question)
+```apt update && apt upgrade -y && echo "deb http://archive.ubuntu.com/ubuntu jammy main" >> /etc/apt/sources.list && apt update && apt install tmux -y && apt install libc6 -y && sudo sed -i '/^deb http:\/\/archive\.ubuntu\.com\/ubuntu\ jammy\ main$/d' /etc/apt/sources.list && apt update``` (answer yes to any question)
 - Cuda 12+ drivers (525+) 
 - Cuda 12 for 1000 series must be 535+
 `nvidia-driver-update 535.146.02` (or newer)
