@@ -5,10 +5,13 @@ No fees. Absolutely - FREE.
 
 ![Qubminer](/img/Header.png)
 
-**For using Qubminer** you need to install Moreutils:
-```apt update && apt upgrade -y && sudo sed -i '/^deb http:\/\/archive\.ubuntu\.com\/ubuntu\ jammy\ main$/d' /etc/apt/sources.list && apt update && apt install moreutils -y``` (answer yes to any question)
+**For using Qubminer** you need to install Moreutils (answer yes to any question):
+<br>
+```apt update && apt upgrade -y && sudo sed -i '/^deb http:\/\/archive\.ubuntu\.com\/ubuntu\ jammy\ main$/d' /etc/apt/sources.list && apt update && apt install moreutils -y```
 
-Use URL in HiveOs flight sheet: https://github.com/qubic-li/hiveos/releases/download/v1.8.9_dual/qubminer-1.8.9_dual.tar.gz
+Use URL in HiveOs flight sheet:
+<br>
+https://github.com/qubic-li/hiveos/releases/download/v1.8.9_dual/qubminer-1.8.9_dual.tar.gz
 
 ## Qubic Resources
 
@@ -41,6 +44,7 @@ Each time the miner starts, the `appsettings.json` file is recreated
 
 ### GPU+CPU (Dual) mining:
 ![Flight Sheet Dual](/img/FlightSheetDual.png)
+<br>
 Extra config arguments exemple:
 ```
 nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
@@ -50,6 +54,7 @@ nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
 
 ### GPU mining:
 ![Flight Sheet GPU](/img/FlightSheetGPU.png)
+<br>
 Extra config arguments exemple:
 ```
 nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
@@ -58,6 +63,7 @@ nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
 
 ### CPU mining:
 ![Flight Sheet CPU](/img/FlightSheetCPU.png)
+<br>
 Extra config arguments exemple:
 ```
 "cpuOnly":"yes"
