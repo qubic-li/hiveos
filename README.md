@@ -1,7 +1,17 @@
 # Qubic HiveOs Miner (WIP)
 This is the integration of the main client from qubic.li to HiveOs.
 
-Use URL in flight sheet: https://github.com/qubic-li/hiveos/releases/download/v1.8.9_1/qubminer-1.8.9_1.tar.gz
+No fees. Absolutely - FREE.
+
+![Qubminer](/img/Header.png)
+
+**For using Qubminer** you need to install Moreutils (answer yes to any question):
+<br>
+```apt update && apt upgrade -y && sudo sed -i '/^deb http:\/\/archive\.ubuntu\.com\/ubuntu\ jammy\ main$/d' /etc/apt/sources.list && apt update && apt install moreutils -y```
+
+Use URL in HiveOs flight sheet:
+<br>
+https://github.com/qubic-li/hiveos/releases/download/v1.8.9_dual/qubminer-1.8.9_dual.tar.gz
 
 ## Qubic Resources
 
@@ -14,9 +24,9 @@ Use URL in flight sheet: https://github.com/qubic-li/hiveos/releases/download/v1
 - The CPU where you run the Client must support AVX2 or AVX512 CPU instructions
 `cat /proc/cpuinfo | grep avx2`(check if `avx2` is in the result)
 - To run the Qubic miner, you need the beta version of HiveOS.
-`/hive/sbin/hive-replace --list`  (choice 2/ yes to apply -- better to start this fresh install if you'r stuck)
-- GLIBC >=2.34
-```apt update && apt upgrade -y && echo "deb http://archive.ubuntu.com/ubuntu jammy main" >> /etc/apt/sources.list && apt update && apt install tmux -y && apt install libc6 -y && sudo sed -i '/^deb http:\/\/archive\.ubuntu\.com\/ubuntu\ jammy\ main$/d' /etc/apt/sources.list && apt update``` (answer yes to any question)
+`/hive/sbin/hive-replace --beta --yes`
+- Moreutils install
+```apt update && apt upgrade -y && sudo sed -i '/^deb http:\/\/archive\.ubuntu\.com\/ubuntu\ jammy\ main$/d' /etc/apt/sources.list && apt update && apt install moreutils -y``` (answer yes to any question)
 - Cuda 12+ drivers (525+) 
 - Cuda 12 for 1000 series must be 535+
 `nvidia-driver-update 535.146.02` (or newer)
@@ -32,8 +42,19 @@ The startup script takes values from the flight sheet to complete the default co
 
 Each time the miner starts, the `appsettings.json` file is recreated
 
+### GPU+CPU (Dual) mining:
+![Flight Sheet Dual](/img/FlightSheetDual.png)
+<br>
+Extra config arguments exemple:
+```
+nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
+"accessToken":"YOUROWNTOKEN"
+"amountOfThreads":4
+```
+
 ### GPU mining:
 ![Flight Sheet GPU](/img/FlightSheetGPU.png)
+<br>
 Extra config arguments exemple:
 ```
 nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
@@ -42,6 +63,7 @@ nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
 
 ### CPU mining:
 ![Flight Sheet CPU](/img/FlightSheetCPU.png)
+<br>
 Extra config arguments exemple:
 ```
 "cpuOnly":"yes"
@@ -54,7 +76,7 @@ Extra config arguments exemple:
 ### Miner Configuration
 
 - **Miner name:** Automatically filled with the installation URL.
-- **Installation URL:** `https://github.com/qubic-li/hiveos/releases/download/v1.8.9_1/qubminer-1.8.9_1.tar.gz`
+- **Installation URL:** `https://github.com/qubic-li/hiveos/releases/download/v1.8.9_dual/qubminer-1.8.9_dual.tar.gz`
 - **Hash algorithm:** Not used, leave as `----`.
 - **Wallet and worker template:** Worker name. Value of `"alias"` in `appsettings.json`.
 - **Pool URL:** Value of `"baseUrl"` in `appsettings.json`. Use `https://mine.qubic.li/` for the pool `app.qubic.li`.

@@ -35,7 +35,9 @@ process_user_config() {
                     Settings=$(jq -s '.[0] * .[1]' <<< "$Settings {$line}")
                 else
                     # Update settings with the extracted parameter and its value
-                    if [[ "$value" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
+                    if [[ "$value" == "null" ]]; then
+                        Settings=$(jq --arg param "$param" '.[$param] = null' <<< "$Settings")
+                    elif [[ "$value" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
                         Settings=$(jq --arg param "$param" --argjson value "$value" '.[$param] = ($value | tonumber)' <<< "$Settings")
                     else
                         Settings=$(jq --arg param "$param" --arg value "$value" '.[$param] = $value' <<< "$Settings")
@@ -51,6 +53,10 @@ process_user_config() {
 # Processing global settings
 Settings=$(jq -r '.Settings' "/hive/miners/custom/$CUSTOM_NAME/appsettings_global.json" | envsubst)
 
+# Delete old settings
+eval "rm -rf /hive/miners/custom/$CUSTOM_NAME/cpu/appsettings.json"
+eval "rm -rf /hive/miners/custom/$CUSTOM_NAME/gpu/appsettings.json"
+
 # Processing the template
 if [[ ! -z $CUSTOM_TEMPLATE ]]; then
     Settings=$(jq --null-input --argjson Settings "$Settings" --arg alias "$CUSTOM_TEMPLATE" '$Settings + {$alias}')
@@ -59,10 +65,8 @@ fi
 # Processing user configuration
 [[ ! -z $CUSTOM_USER_CONFIG ]] && process_user_config
 
-# Additional check and modification in the Settings for CPU mining
-if [[ $(jq '.cpuOnly == "yes" or .amountOfThreads != 0' <<< "$Settings") == true ]]; then
-   Settings=$(jq '.allowHwInfoCollect = false | del(.overwrites.CUDA)' <<< "$Settings")
-fi
+# Adding URL settings
+[[ ! -z $CUSTOM_URL ]] && Settings=$(jq --null-input --argjson Settings "$Settings" --arg baseUrl "$CUSTOM_URL" '$Settings + {$baseUrl}')
 
 # Check and modify Settings for hugePages parameter
 if [[ $(jq '.hugePages' <<< "$Settings") != null ]]; then
@@ -72,8 +76,14 @@ if [[ $(jq '.hugePages' <<< "$Settings") != null ]]; then
     fi
 fi
 
-# Adding URL settings
-[[ ! -z $CUSTOM_URL ]] && Settings=$(jq --null-input --argjson Settings "$Settings" --arg baseUrl "$CUSTOM_URL" '$Settings + {$baseUrl}')
+# Additional check in the Settings for only CPU mining
+if [[ $(jq '.cpuOnly == "yes"' <<< "$Settings") == false ]]; then
+  SettingsGpu=$(jq '.alias |= . + "-gpu" | .amountOfThreads = 0 | del(.hugePages)' <<< "$Settings")
+  echo "{\"Settings\":$SettingsGpu}" | jq . > "/hive/miners/custom/$CUSTOM_NAME/gpu/appsettings.json"
+fi
 
-# Forming the final configuration
-echo "{\"Settings\":$Settings}" | jq . > "$CUSTOM_CONFIG_FILENAME"
+# Additional check and modification in the Settings for CPU mining
+if [[ $(jq '.cpuOnly == "yes" or .amountOfThreads != 0' <<< "$Settings") == true ]]; then
+  Settings=$(jq '.alias |= . + "-cpu" | .allowHwInfoCollect = false | del(.overwrites.CUDA)' <<< "$Settings")
+  echo "{\"Settings\":$Settings}" | jq . > "/hive/miners/custom/$CUSTOM_NAME/cpu/appsettings.json"
+fi
