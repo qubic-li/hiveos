@@ -72,7 +72,7 @@ fi
 if [[ $(jq '.hugePages' <<< "$Settings") != null ]]; then
     hugePages=$(jq -r '.hugePages' <<< "$Settings")
     if [[ ! -z $hugePages && $hugePages -gt 0 ]]; then
-        eval "/usr/sbin/sysctl -w vm.nr_hugepages=$hugePages"
+        eval "sysctl -w vm.nr_hugepages=$hugePages"
     fi
 fi
 

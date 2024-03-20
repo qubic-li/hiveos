@@ -10,7 +10,7 @@ fi
 #copy qli-Client to CPU directory and run for CPU, then to GPU directory and run for GPU
 cp ./qli-Client ./cpu/
 cp ./qli-Client ./gpu/
-sleep 3
+sleep 4
 
 # Check if both ./cpu/appsettings.json and ./gpu/appsettings.json exist
 if [[ -e ./cpu/appsettings.json && -e ./gpu/appsettings.json ]]; then
