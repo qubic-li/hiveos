@@ -3,13 +3,18 @@ get_miner_version() {
     local ver="Client: ${custom_version}"
 
     # Append GPU information to 'ver' only if 'gpu_runner' is defined.
+    if [ -n "${epoh_runner}" ]; then
+        ver="${ver}, ${epoh_runner}"
+    fi
+
+    # Append GPU information to 'ver' only if 'gpu_runner' is defined.
     if [ -n "${gpu_runner}" ]; then
-        ver="${ver}, GPU: ${gpu_runner}"
+        ver="${ver}, GPU:${gpu_runner}"
     fi
 
     # Append CPU information to 'ver' only if 'cpu_runner' is defined.
     if [ -n "${cpu_runner}" ]; then
-        ver="${ver}, CPU: ${cpu_runner}"
+        ver="${ver}, CPU:${cpu_runner}"
     fi
 
     echo "$ver"
@@ -50,6 +55,7 @@ gpu_conf_name="/hive/miners/custom/qubminer/gpu/appsettings.json"
 custom_version=$(grep -Po "(?<=Starting Client ).*" "$log_name" | tail -n1)
 gpu_runner=$(grep -Po "(?<=cuda version ).*(?= is)" "$log_name" | tail -n1)
 cpu_runner=$(grep -Po "(?<=cpu version ).*(?= is)" "$log_name" | tail -n1)
+epoh_runner=$(grep -Po "E:\d+" "$log_name" | tail -n1)
 
 diffTime=$(get_log_time_diff)
 maxDelay=300
