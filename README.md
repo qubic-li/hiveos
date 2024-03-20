@@ -21,10 +21,6 @@ https://github.com/qubic-li/hiveos/releases/download/v1.8.9_dual/qubminer-1.8.9_
 `cat /proc/cpuinfo | grep avx2`(check if `avx2` is in the result)
 - To run the Qubic miner, you need the beta version of HiveOS.
 `/hive/sbin/hive-replace --beta --yes`
-- Moreutils installation:
-```apt update && apt upgrade -y && apt install moreutils``` (answer yes to any question)
-<br><br>:bangbang: **If you have already added the repository: `http://archive.ubuntu.com/ubuntu jammy`, please be cautious as conflicts may arise and HiveOs could become corrupted.** :point_up: :bangbang:
-<br>*If the eloword package has been installed, first execute `/hive/sbin/hive-replace --beta --yes`, and then proceed to install 'moreutils' with `apt install moreutils`.*<br><br>
 - Cuda 12+ drivers (525+) 
 - Cuda 12 for 1000 series must be 535+
 `nvidia-driver-update 535.146.02` (or newer)
