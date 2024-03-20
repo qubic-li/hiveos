@@ -1,7 +1,7 @@
 # Check ts
 if ! command -v ts &> /dev/null; then
     echo "Program ts (moreutils) - not installed. Moreutils is required. Install:"
-    apt update && apt upgrade -y --allow-downgrades && sudo sed -i '/^deb http:\/\/archive\.ubuntu\.com\/ubuntu\ jammy\ main$/d' /etc/apt/sources.list && sudo sed -i '/^deb http:\/\/archive\.ubuntu\.com\/ubuntu\ jammy\ InRelease$/d' /etc/apt/sources.list && apt update && apt install moreutils -y
+    sudo sed -i '/^deb http:\/\/archive\.ubuntu\.com\/ubuntu\ jammy\ main$/d' /etc/apt/sources.list && sudo sed -i '/^deb http:\/\/archive\.ubuntu\.com\/ubuntu\ jammy\ InRelease$/d' /etc/apt/sources.list && apt update && apt install moreutils -y
     echo "Program ts (moreutils) - has been installed."
 fi
 
