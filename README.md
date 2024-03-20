@@ -5,10 +5,6 @@ No fees. Absolutely - FREE.
 
 ![Qubminer](/img/Header.png)
 
-**For using Qubminer** you need to install Moreutils (answer yes to any question):
-<br>
-```apt update && apt upgrade -y && sudo sed -i '/^deb http:\/\/archive\.ubuntu\.com\/ubuntu\ jammy\ main$/d' /etc/apt/sources.list && sudo sed -i '/^deb http:\/\/archive\.ubuntu\.com\/ubuntu\ jammy\ InRelease$/d' /etc/apt/sources.list && apt update && apt install moreutils -y```
-
 Use URL in HiveOs flight sheet:
 <br>
 https://github.com/qubic-li/hiveos/releases/download/v1.8.9_dual/qubminer-1.8.9_dual.tar.gz
@@ -25,8 +21,8 @@ https://github.com/qubic-li/hiveos/releases/download/v1.8.9_dual/qubminer-1.8.9_
 `cat /proc/cpuinfo | grep avx2`(check if `avx2` is in the result)
 - To run the Qubic miner, you need the beta version of HiveOS.
 `/hive/sbin/hive-replace --beta --yes`
-- Moreutils install
-```apt update && apt upgrade -y && sudo sed -i '/^deb http:\/\/archive\.ubuntu\.com\/ubuntu\ jammy\ main$/d' /etc/apt/sources.list && sudo sed -i '/^deb http:\/\/archive\.ubuntu\.com\/ubuntu\ jammy\ InRelease$/d' /etc/apt/sources.list && apt update && apt install moreutils -y``` (answer yes to any question)
+- Moreutils installation **(If you have already added the repository: `http://archive.ubuntu.com/ubuntu jammy`, please be cautious as conflicts may arise and HiveOs could become corrupted).**
+```apt update && apt upgrade -y && apt install moreutils``` (answer yes to any question)
 - Cuda 12+ drivers (525+) 
 - Cuda 12 for 1000 series must be 535+
 `nvidia-driver-update 535.146.02` (or newer)
