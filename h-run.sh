@@ -1,14 +1,14 @@
 # Check ts
 if ! command -v ts &> /dev/null; then
     echo "Program ts (moreutils) - not installed. Moreutils is required. Install:"
-    sudo sed -i '/^deb http:\/\/archive\.ubuntu\.com\/ubuntu\ jammy\ main$/d' /etc/apt/sources.list && sudo sed -i '/^deb http:\/\/archive\.ubuntu\.com\/ubuntu\ jammy\ InRelease$/d' /etc/apt/sources.list && apt update && apt install moreutils -y
+    sudo sed -i '/^deb http:\/\/[a-z]*\.*archive\.ubuntu\.com\/ubuntu\ jammy\ [a-zA-Z0-9]*$/d' /etc/apt/sources.list && apt update && apt install moreutils -y
     echo "Program ts (moreutils) - has been installed."
 fi
 
 #copy qli-Client to CPU directory and run for CPU, then to GPU directory and run for GPU
 cp ./qli-Client ./cpu/
 cp ./qli-Client ./gpu/
-sleep 1
+sleep 3
 
 # Check if both ./cpu/appsettings.json and ./gpu/appsettings.json exist
 if [[ -e ./cpu/appsettings.json && -e ./gpu/appsettings.json ]]; then
