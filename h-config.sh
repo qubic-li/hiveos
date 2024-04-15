@@ -29,6 +29,11 @@ process_user_config() {
             # Check if modifications were made, if not, use original parameter
             [[ "$param" != "$modified_param" ]] && param=$modified_param
 
+            # Execute shell commands if present in the value
+            if [[ "$value" =~ \$\(.+\) ]]; then
+                # Evaluate the command within the value
+                value=$(eval echo "$value")
+            fi
             # Check if value exists before updating Settings
             if [[ ! -z "$value" ]]; then
               if [[ "$param" == "overwrites" ]]; then
