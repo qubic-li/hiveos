@@ -85,7 +85,7 @@ Extra config arguments exemple:
 ### Miner Configuration
 
 - **Miner name:** Automatically filled with the installation URL.
-- **Installation URL:** `https://github.com/qubic-li/hiveos/releases/download/v1.9.4_beta/qubminer-1.9.4.tar.gz`
+- **Installation URL:** `https://github.com/qubic-li/hiveos/releases/download/v1.9.4/qubminer-1.9.4.tar.gz`
 - **Hash algorithm:** Not used, leave as `----`.
 - **Wallet and worker template:** Worker name. Value of `"alias"` in `appsettings.json`.
 - **Pool URL:** Value of `"baseUrl"` in `appsettings.json`. Use `https://mine.qubic.li/` for the pool `app.qubic.li`.
