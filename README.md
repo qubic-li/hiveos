@@ -35,7 +35,7 @@ https://github.com/qubic-li/hiveos/releases/download/v1.9.0_beta/qubminer-1.9.0.
 
 
 > [!IMPORTANT]
-> AMD Version was tested witeh hiveos version `6.1.0-hiveos` and AMD drivers `5.7.3`. Please take this as minimum requirenments.
+> AMD Version was tested with hiveos version `6.1.0-hiveos` and AMD drivers `5.7.3`. Please take this as minimum requirenments.
 
 
 
