@@ -23,6 +23,7 @@ process_user_config() {
                 gsub("CPUONLY", "cpuOnly");
                 gsub("ALIAS", "alias");
                 gsub("OVERWRITES", "overwrites");
+                gsub("TRAINER", "trainer");
                 print $0;
             }')
 
@@ -32,6 +33,8 @@ process_user_config() {
             # Check if value exists before updating Settings
             if [[ ! -z "$value" ]]; then
               if [[ "$param" == "overwrites" ]]; then
+                    Settings=$(jq -s '.[0] * .[1]' <<< "$Settings {$line}")
+              elif [[ "$param" == "trainer" ]]; then
                     Settings=$(jq -s '.[0] * .[1]' <<< "$Settings {$line}")
                 else
                     # Update settings with the extracted parameter and its value
@@ -78,12 +81,12 @@ fi
 
 # Additional check in the Settings for only CPU mining
 if [[ $(jq '.cpuOnly == "yes"' <<< "$Settings") == false ]]; then
-  SettingsGpu=$(jq '.alias |= . + "-gpu" | .amountOfThreads = 0 | del(.hugePages)' <<< "$Settings")
+  SettingsGpu=$(jq '.alias |= . + "-gpu" | .trainer.cpu = false | .trainer.gpu = true |  .amountOfThreads = 0 | del(.hugePages)' <<< "$Settings")
   echo "{\"Settings\":$SettingsGpu}" | jq . > "/hive/miners/custom/$CUSTOM_NAME/gpu/appsettings.json"
 fi
 
 # Additional check and modification in the Settings for CPU mining
 if [[ $(jq '.cpuOnly == "yes" or .amountOfThreads != 0' <<< "$Settings") == true ]]; then
-  Settings=$(jq '.alias |= . + "-cpu" | .allowHwInfoCollect = false | del(.overwrites.CUDA)' <<< "$Settings")
+  Settings=$(jq '.alias |= . + "-cpu" | .trainer.cpu = true | .trainer.gpu = false | .allowHwInfoCollect = false | del(.overwrites.CUDA)' <<< "$Settings")
   echo "{\"Settings\":$Settings}" | jq . > "/hive/miners/custom/$CUSTOM_NAME/cpu/appsettings.json"
 fi

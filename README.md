@@ -28,8 +28,10 @@ https://github.com/qubic-li/hiveos/releases/download/v1.9.0_beta/qubminer-1.9.0.
 - Higher RAM frequencies improves CPU it/s
 - Do not overload your CPUs with threads, instead, aim to find the sweetpoint
 
-*Only NVIDIA GPU compatible*
 <br>
+
+> [!NOTE]
+> The Defualt Configuration is vor NVIDIA. To enable AMD GPU you need to add `"trainer": {"gpu":true,"gpuVersion": "AMD"}` to Extra config arguments. 
 
 ## Flight Sheet Configuration
 The startup script takes values from the flight sheet to complete the default configuration (`appsettings_global.json`).
@@ -46,12 +48,25 @@ nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
 "amountOfThreads":4
 ```
 
+**Sample Configuration for AMD GPU's**
+```
+"amountOfThreads":4
+"trainer": {"gpu":true,"gpuVersion": "AMD"}
+"accessToken":"YOUROWNTOKEN"
+```
+
 ### GPU mining:
 ![Flight Sheet GPU](/img/FlightSheetGPU.png)
 <br>
 Extra config arguments exemple:
 ```
 nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
+"accessToken":"YOUROWNTOKEN"
+```
+
+**Sample Configuration for AMD GPU's**
+```
+"trainer": {"gpu":true,"gpuVersion": "AMD"}
 "accessToken":"YOUROWNTOKEN"
 ```
 
@@ -70,7 +85,7 @@ Extra config arguments exemple:
 ### Miner Configuration
 
 - **Miner name:** Automatically filled with the installation URL.
-- **Installation URL:** `https://github.com/qubic-li/hiveos/releases/download/v1.9.0_beta/qubminer-1.9.0.tar.gz`
+- **Installation URL:** `https://github.com/qubic-li/hiveos/releases/download/v1.9.4_beta/qubminer-1.9.4.tar.gz`
 - **Hash algorithm:** Not used, leave as `----`.
 - **Wallet and worker template:** Worker name. Value of `"alias"` in `appsettings.json`.
 - **Pool URL:** Value of `"baseUrl"` in `appsettings.json`. Use `https://mine.qubic.li/` for the pool `app.qubic.li`.
@@ -95,4 +110,5 @@ Extra config arguments exemple:
 | ```"hugePages":nnnn``` | Depending on your environment you might want to enable huge pages. This can increase your iterations per second. The trainer will tell you what is the optimal setting when it detects a wrong value. The number depends on the number of threads: nb_threads * 52 (e.g., 16 * 52 = 832). If trainer is unstable please remove. |
 |  ```"overwrites": {"AVX512": false}``` | Disable AVX512 and enforce AVX2 (AVX Intel CPU not working)                                                                                                                                                                                  |
 | ```"overwrites": {"SKYLAKE": true}```  | Enforce SKYLAKE (AVX Intel CPU not working)                                                                                                                                                                                                  |
+| ```"trainer": {"gpu": true, "gpVersion": "AMD"}```  | Enforce AMD                                                                                                                                                                                                  |
 <br>
