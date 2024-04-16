@@ -33,6 +33,12 @@ https://github.com/qubic-li/hiveos/releases/download/v1.9.0_beta/qubminer-1.9.0.
 > [!NOTE]
 > The Defualt Configuration is vor NVIDIA. To enable AMD GPU you need to add `"trainer": {"gpu":true,"gpuVersion": "AMD"}` to Extra config arguments. 
 
+
+> [!IMPORTANT]
+> AMD Version was tested witeh hiveos version `6.1.0-hiveos` and AMD drivers `5.7.3`. Please take this as minimum requirenments.
+
+
+
 ## Flight Sheet Configuration
 The startup script takes values from the flight sheet to complete the default configuration (`appsettings_global.json`).
 
