@@ -1,13 +1,25 @@
-# Qubic HiveOs Miner (WIP)
+# Qubic HiveOs Miner
 This is the integration of the main client from qubic.li to HiveOs.
-
-***No fees. Absolutely - FREE.***
 
 ![Qubminer](/img/Header.png)
 
 Use URL in HiveOs flight sheet:
 <br>
-https://github.com/qubic-li/hiveos/releases/download/v1.9.0_beta/qubminer-1.9.0.tar.gz
+https://github.com/qubic-li/hiveos/releases/download/v1.9.0_beta/qubminer-1.9.5.tar.gz
+
+- [Qubic HiveOs Miner](#qubic-hiveos-miner)
+  - [Qubic Resources](#qubic-resources)
+  - [:warning: HiveOs Mandatory Installation Instructions](#warning-hiveos-mandatory-installation-instructions)
+  - [Flight Sheet Configuration](#flight-sheet-configuration)
+    - [GPU+CPU (Dual) mining:](#gpucpu-dual-mining)
+    - [GPU mining:](#gpu-mining)
+    - [CPU mining:](#cpu-mining)
+  - [:wrench: Hive Os Settings](#wrench-hive-os-settings)
+    - [Miner Configuration](#miner-configuration)
+    - [Recommended GPU overclocks :](#recommended-gpu-overclocks-)
+    - [Extra config arguments Box (options):](#extra-config-arguments-box-options)
+
+
 
 ## Qubic Resources
 
@@ -31,7 +43,7 @@ https://github.com/qubic-li/hiveos/releases/download/v1.9.0_beta/qubminer-1.9.0.
 <br>
 
 > [!NOTE]
-> The Defualt Configuration is vor NVIDIA. To enable AMD GPU you need to add `"trainer": {"gpu":true,"gpuVersion": "AMD"}` to Extra config arguments. 
+> The defualt configuration is vor NVIDIA. To enable AMD GPU you need to add `"trainer": {"gpu":true,"gpuVersion": "AMD"}` to Extra config arguments. 
 
 
 > [!IMPORTANT]
@@ -45,6 +57,10 @@ The startup script takes values from the flight sheet to complete the default co
 
 Each time the miner starts, the `appsettings.json` file is recreated
 
+
+> [!IMPORTANT]
+> For CPU you have to define which Version should be used. The `cpuVersion` propery can be used. Please refer to https://github.com/qubic-li/client/?tab=readme-ov-file#qli-trainer-options for a list of available versions. You can also find there all other available options.
+
 ### GPU+CPU (Dual) mining:
 ![Flight Sheet Dual](/img/FlightSheetDual.png)
 <br>
@@ -53,12 +69,13 @@ Extra config arguments exemple:
 nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
 "accessToken":"YOUROWNTOKEN"
 "amountOfThreads":4
+"trainer": {"cpuVersion": "GENERIC"}
 ```
 
 **Sample Configuration for AMD GPU's**
 ```
 "amountOfThreads":4
-"trainer": {"gpu":true,"gpuVersion": "AMD"}
+"trainer": {"gpu":true,"gpuVersion": "AMD", "cpuVersion": "GENERIC"}
 "accessToken":"YOUROWNTOKEN"
 ```
 
@@ -85,6 +102,7 @@ Extra config arguments exemple:
 "cpuOnly":"yes"
 "amountOfThreads":24
 "accessToken":"YOUROWNTOKEN"
+"trainer": {"cpu":true,"cpuVersion": "GENERIC"}
 ```
 
 ## :wrench: Hive Os Settings
