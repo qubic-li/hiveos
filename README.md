@@ -30,26 +30,42 @@ https://github.com/qubic-li/hiveos/releases/download/latest/qubminer-latest.tar.
 
 ## :warning: HiveOs Mandatory Installation Instructions
 - The CPU where you run the Client must support AVX2 or AVX512 CPU instructions.
-`cat /proc/cpuinfo | grep avx2` (check if `avx2` is in the result)
+```sh
+cat /proc/cpuinfo | grep avx2
+```
+(check if `avx2` is in the result)
 - RAM should be >= 16GB to improve CPU performance.
 - Higher RAM frequencies improve CPU performance.
 - Do not overload your CPUs with threads; instead, aim to find the sweet spot.
 
-- To run the Qubic miner, you need the beta version of HiveOS.
-Run `/hive/sbin/hive-replace --beta --yes`
+- To run the Qubic miner, you need the beta version of HiveOS. Run:
+```sh
+/hive/sbin/hive-replace --beta --yes
+```
 - You need GLIBC version 2.34 or higher. During the installation process, select "Yes" and press Enter.
-Run the following commands: `apt update && echo "deb http://cz.archive.ubuntu.com/ubuntu jammy main" >> /etc/apt/sources.list && apt update && apt install unzip g++ gcc g++-11 -y && apt install libc6 -y && sed -i '/deb http:\/\/cz\.archive\.ubuntu\.com\/ubuntu jammy main/d' /etc/apt/sources.list && apt update`
+Run the following commands:
+```sh
+apt update && echo "deb http://cz.archive.ubuntu.com/ubuntu jammy main" >> /etc/apt/sources.list && apt update && apt install unzip g++ gcc g++-11 -y && apt install libc6 -y && sed -i '/deb http:\/\/cz\.archive\.ubuntu\.com\/ubuntu jammy main/d' /etc/apt/sources.list && apt update
+```
 
 **For NVIDIA cards:**
 - Cuda 12+ drivers (525+) 
 - Cuda 12 for 1000 series must be 535+
-`nvidia-driver-update 535.146.02` (or newer)
+```sh
+nvidia-driver-update 535.146.02
+```
+(or newer)
 
 **For AMD cards:**
 - Install version 5.7.3 drivers using the command:
-`amd-ocl-install 5.7 5.7`
+```sh
+amd-ocl-install 5.7 5.7
+```
 - Install the libamdhip64 library. 
-Run the following commands: `cd /opt/rocm/lib && wget https://github.com/Gddrig/Qubic_Hiveos/releases/download/0.4.1/libamdhip64.so.zip && unzip libamdhip64.so.zip && chmod +rwx /opt/rocm/lib/* && rm libamdhip64.so.zip && cd / && ldconfig`
+Run the following commands:
+```sh
+cd /opt/rocm/lib && wget https://github.com/Gddrig/Qubic_Hiveos/releases/download/0.4.1/libamdhip64.so.zip && unzip libamdhip64.so.zip && chmod +rwx /opt/rocm/lib/* && rm libamdhip64.so.zip && cd / && ldconfig
+```
 - Reboot your RIG
 - If you encounter the error: `Looks like the trainer isn't working properly: ( check your config and he requirements.`
 you need to change your subscription plan to "Fixed Reward 85%"
