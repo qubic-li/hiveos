@@ -53,7 +53,7 @@ cpu_conf_name="/hive/miners/custom/qubminer/cpu/appsettings.json"
 gpu_conf_name="/hive/miners/custom/qubminer/gpu/appsettings.json"
 
 custom_version=$(grep -Po "(?<=Starting Client ).*" "$log_name" | tail -n1)
-gpu_runner=$(grep -Po "(?<=cuda version ).*(?= is)" "$log_name" | tail -n1)
+gpu_runner=$(grep -Po "(?<=cuda version ).*(?= is)" "$log_name" | tail -n1 || grep -Po "(?<=hip version ).*(?= is)" "$log_name" | tail -n1)
 cpu_runner=$(grep -Po "(?<=cpu version ).*(?= is)" "$log_name" | tail -n1)
 epoh_runner=$(grep -Po "E:\d+" "$log_name" | tail -n1)
 
@@ -76,12 +76,12 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
     cpu_count=0
   fi
 
-  gpu_count=`cat $log_head_name | grep "CUDA devices are used" | tail -n 1 | cut -d " " -f4`
+  gpu_count=$(cat "$log_head_name" | grep -E "CUDA devices are used|ROCM devices are used" | tail -n 1 | cut -d " " -f4)
   [[ -z $gpu_count ]] && gpu_count=0
   
   if [ $cpu_count -eq 0 ] || [ $gpu_count -eq 0 ]; then
     echo "..."
-    cat $log_name | grep -E "threads are used|CUDA devices are used|Your Alias is .*-cpu" | tail -n 100 > $log_head_name
+    cat $log_name | grep -E "threads are used|CUDA devices are used|ROCM devices are used|Your Alias is .*-cpu" | tail -n 100 > $log_head_name
 
     cpu_count=`cat $log_head_name | grep "threads are used" | tail -n 1 | cut -d " " -f4`
     if [ -z "$cpu_count" ] && tail -n 1 "$log_head_name" | grep -q "Your Alias is .*-cpu"; then
@@ -90,7 +90,7 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
       cpu_count=0
     fi
 
-    gpu_count=`cat $log_head_name | grep "CUDA devices are used" | tail -n 1 | cut -d " " -f4`
+    gpu_count=$(cat "$log_head_name" | grep -E "CUDA devices are used|ROCM devices are used" | tail -n 1 | cut -d " " -f4)
     [[ -z $gpu_count ]] && gpu_count=0
   fi
   
