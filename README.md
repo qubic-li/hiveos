@@ -40,12 +40,12 @@ Run `/hive/sbin/hive-replace --beta --yes`
 - You need GLIBC version 2.34 or higher. During the installation process, select "Yes" and press Enter.
 Run the following commands: `apt update && echo "deb http://cz.archive.ubuntu.com/ubuntu jammy main" >> /etc/apt/sources.list && apt update && apt install unzip g++ gcc g++-11 -y && apt install libc6 -y && sed -i '/deb http:\/\/cz\.archive\.ubuntu\.com\/ubuntu jammy main/d' /etc/apt/sources.list && apt update`
 
-For NVIDIA cards:
+**For NVIDIA cards:**
 - Cuda 12+ drivers (525+) 
 - Cuda 12 for 1000 series must be 535+
 `nvidia-driver-update 535.146.02` (or newer)
 
-For AMD cards:
+**For AMD cards:**
 - Install version 5.7.3 drivers using the command:
 `amd-ocl-install 5.7 5.7`
 - Install the libamdhip64 library. 
