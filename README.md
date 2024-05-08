@@ -50,11 +50,14 @@ apt update && echo "deb http://cz.archive.ubuntu.com/ubuntu jammy main" >> /etc/
 
 **For NVIDIA cards:**
 - Cuda 12+ drivers (525+) 
-- Cuda 12 for 1000 series must be 535+
+- Cuda 12 for 1000 series must be 535+ (or newer)
 ```sh
 nvidia-driver-update 535.146.02
 ```
-(or newer)
+- For 4000 series use version 550+
+```sh
+nvidia-driver-update 550.54.14
+```
 
 **For AMD cards:**
 - Install version 5.7.3 drivers using the command:
