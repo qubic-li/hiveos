@@ -5,7 +5,7 @@ This is the integration of the main client from qubic.li to HiveOs.
 
 Use URL in HiveOs flight sheet:
 <br>
-https://github.com/qubic-li/hiveos/releases/download/v1.9.7/qubminer-1.9.7.tar.gz
+https://github.com/qubic-li/hiveos/releases/download/latest/qubminer-latest.tar.gz
 
 - [Qubic HiveOs Miner](#qubic-hiveos-miner)
   - [Qubic Resources](#qubic-resources)
@@ -142,7 +142,7 @@ Extra config arguments exemple:
 ### Miner Configuration
 
 - **Miner name:** Automatically filled with the installation URL.
-- **Installation URL:** `https://github.com/qubic-li/hiveos/releases/download/v1.9.7/qubminer-1.9.7.tar.gz`
+- **Installation URL:** `https://github.com/qubic-li/hiveos/releases/download/latest/qubminer-latest.tar.gz`
 - **Hash algorithm:** Not used, leave as `----`.
 - **Wallet and worker template:** Worker name. Value of `"alias"` in `appsettings.json`.
 - **Pool URL:** Value of `"baseUrl"` in `appsettings.json`. Use `https://mine.qubic.li/` for the pool `app.qubic.li`.
@@ -168,4 +168,5 @@ Extra config arguments exemple:
 |  ```"overwrites": {"AVX512": false}``` | Disable AVX512 and enforce AVX2 (AVX Intel CPU not working)                                                                                                                                                                                  |
 | ```"overwrites": {"SKYLAKE": true}```  | Enforce SKYLAKE (AVX Intel CPU not working)                                                                                                                                                                                                  |
 | ```"trainer": {"gpu": true, "gpVersion": "AMD"}```  | Enforce AMD                                                                                                                                                                                                  |
+| ```AutoUpdate```  | Enable to check for a new version of the miner after starting it, and automatically install                                                                                                                                                                                                                                       |
 <br>
