@@ -7,7 +7,7 @@ if ! command -v ts &> /dev/null; then
     echo "Program ts (moreutils) - has been installed."
 fi
 
-#copy qli-Client to CPU directory and run for CPU, then to GPU directory and run for GPU
+# Copy qli-Client to CPU directory and run for CPU, then to GPU directory and run for GPU
 cp ./qli-Client ./cpu/
 cp ./qli-Client ./gpu/
 sleep 4

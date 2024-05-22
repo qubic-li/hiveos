@@ -1,6 +1,6 @@
 # Define a function to calculate the miner version along with GPU and CPU information (if available).
 get_miner_version() {
-    local ver="Client: ${custom_version}"
+    local ver="${custom_version}"
 
     # Append GPU information to 'ver' only if 'gpu_runner' is defined.
     if [ -n "${epoh_runner}" ]; then
