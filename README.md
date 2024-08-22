@@ -3,17 +3,17 @@ This is the integration of the main client from qubic.li to HiveOs.
 
 ![Qubminer](/img/Header.png)
 
-- [Qubic HiveOs Miner](#qubic-hiveos-miner)
-  - [Qubic Resources](#qubic-resources)
+- [Qubic HiveOs Miner](#qubicli---hiveos-miner)
+  - [Qubic Resources](#-qubic-resources)
   - [HiveOs Mandatory Installation Instructions](#warning-hiveos-mandatory-installation-instructions)
-  - [Flight Sheet Configuration](#flight-sheet-configuration)
-    - [GPU+CPU (Dual) mining:](#gpucpu-dual-mining)
-    - [GPU mining:](#gpu-mining)
-    - [CPU mining:](#cpu-mining)
-- :wrench: [Hive Os Settings](#wrench-hive-os-settings)
+  - [✈️ Flight Sheet Configuration:](#️-flight-sheet-configuration)
+    - [GPU+CPU (Dual) mining](#-gpucpu-dual-mining)
+    - [GPU mining](#-gpu-mining)
+    - [CPU mining](#-cpu-mining)
+- 🔧 [Hive Os Settings](#-hive-os-settings)
     - [Miner Configuration](#miner-configuration)
-    - [Recommended GPU Overclocks :](#recommended-gpu-overclocks-)
-    - [Extra Config Arguments Box (Options):](#extra-config-arguments-box-options)
+    - [Recommended GPU Overclocks](#recommended-gpu-overclocks)
+    - [Extra Config Arguments Box (Options)](#️-extra-config-arguments-box-options)
 
 
 
@@ -32,7 +32,7 @@ This is the integration of the main client from qubic.li to HiveOs.
 
 - To run the Qubic miner, you need the latest stable version of HiveOS.
 ```sh
-/hive/sbin/hive-replace --stable --yes
+hive-replace --stable --yes
 ```
 
 <br/>
@@ -68,7 +68,7 @@ cd /opt/rocm/lib && wget https://github.com/Gddrig/Qubic_Hiveos/releases/downloa
 - **Miner name:** Automatically filled with the installation URL.
 - **Installation URL:** `https://github.com/qubic-li/hiveos/releases/download/latest/qubminer-latest.tar.gz`
 - **Hash algorithm:** Not used, leave as `----`.
-- **Wallet and worker template:** Worker name. 
+- **Wallet and worker template:** Enter your `worker name`. 
 - **Pool URL:** Use `https://mine.qubic.li/` for the pool `app.qubic.li`.
 - **Pass:** Not used.
   
@@ -122,7 +122,7 @@ AutoUpdate
 AutoUpdate
 ```
 
-## :wrench: Hive Os Settings
+## 🔧 Hive Os Settings
 > [!NOTE]
 > The startup script pulls values from the flight sheet to configure the default settings (appsettings_global.json). Each time the miner starts, the appsettings.json file is recreated.
 
@@ -132,7 +132,7 @@ AutoUpdate
 - **Pool URL:** Value of `"baseUrl"` in `appsettings.json`.
 - **Extra config arguments:** Each line is merged into `appsettings.json`.
 
-### Recommended GPU Overclocks :  
+### Recommended GPU Overclocks:  
 **Medium**  
 3000 series ```nvtool --setcoreoffset 250 --setclocks 1500 --setmem 5001```  
 4000 series ```nvtool --setcoreoffset 250 --setclocks 2400 --setmem 5001```  
@@ -152,7 +152,7 @@ AutoUpdate
 |  ```"overwrites": {"AVX512": false}``` | Disable AVX512 and enforce AVX2 (AVX Intel CPU not working) |
 | ```"overwrites": {"SKYLAKE": true}```  | Enforce SKYLAKE (AVX Intel CPU not working)|
 | ```"trainer": {"gpu": true, "gpVersion": "AMD"}```  | Enforce AMD |
-| ```AutoUpdate```  | Enable to check for a new version of the miner after starting it, and automatically install|
+| ```AutoUpdate```  | Enable automatic version check and installation for the miner after startup.l|
 
 <!--
 
