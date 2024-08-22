@@ -148,7 +148,7 @@ AutoUpdate
 | ```"accessToken":``` | This is your personal Token, which you can obtain from the Control Panel at qubic.li. |
 |  ```"amountOfThreads"``` | How many threads should be used for the AI Training.	|
 | ```"payoutId":``` | This is the ID you want to get token payout for your found solutions. |
-| ```"hugePages":nnnn``` | Consider enabling huge pages to potentially increase iterations per second. The trainer will suggest the optimal setting based on threads * 153 (e.g., 16 threads = 2448). If the trainer becomes unstable, disable huge pages. |
+| ```"hugePages":nnnn``` | Consider enabling huge pages to potentially increase iterations per second. The trainer will suggest the optimal setting based on threads * 138 (e.g., 16 threads = 2208). If the trainer becomes unstable, disable huge pages. |
 |  ```"overwrites": {"AVX512": false}``` | Disable AVX512 and enforce AVX2 (AVX Intel CPU not working) |
 | ```"overwrites": {"SKYLAKE": true}```  | Enforce SKYLAKE (AVX Intel CPU not working)|
 | ```"trainer": {"gpu": true, "gpVersion": "AMD"}```  | Enforce AMD |
