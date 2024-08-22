@@ -81,14 +81,14 @@ cd /opt/rocm/lib && wget https://github.com/Gddrig/Qubic_Hiveos/releases/downloa
 **Extra config arguments example:**
 ```
 nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
+"amountOfThreads":24
 "accessToken":"YOUROWNTOKEN"
-"amountOfThreads":4
 AutoUpdate
 ```
 
 **Sample Configuration for AMD GPU's**
 ```
-"amountOfThreads":4
+"amountOfThreads":24
 "trainer": {"gpu":true,"gpuVersion": "AMD"}
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
