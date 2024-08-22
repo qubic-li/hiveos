@@ -152,7 +152,7 @@ AutoUpdate
 |  ```"overwrites": {"AVX512": false}``` | Disable AVX512 and enforce AVX2 (AVX Intel CPU not working) |
 | ```"overwrites": {"SKYLAKE": true}```  | Enforce SKYLAKE (AVX Intel CPU not working)|
 | ```"trainer": {"gpu": true, "gpVersion": "AMD"}```  | Enforce AMD |
-| ```AutoUpdate```  | Enable automatic version check and installation for the miner after startup.l|
+| ```AutoUpdate```  | Enable automatic version check and installation for the miner after startup.|
 
 <!--
 
