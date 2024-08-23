@@ -132,6 +132,13 @@ AutoUpdate
 - **Pool URL:** Value of `"baseUrl"` in `appsettings.json`.
 - **Extra config arguments:** Each line is merged into `appsettings.json`.
 
+### ⛔ FATAL: GLIBC Version must be >= 2.34
+> [!NOTE]
+> If you're encountering the error FATAL: GLIBC Version must be >= 2.34, it is often due to running an outdated version of HiveOS or having outdated GPU drivers. If you're unable to upgrade your HiveOS version, you can use the following command to upgrade your libc6, which will update your GLIBC version to a compatible level.
+```
+apt update && echo "deb http://cz.archive.ubuntu.com/ubuntu jammy main" >> /etc/apt/sources.list && apt update && apt install unzip g++ gcc g++-11 -y && apt install libc6 -y && sed -i '/deb http:\/\/cz\.archive\.ubuntu\.com\/ubuntu jammy main/d' /etc/apt/sources.list && apt update
+```
+
 ### Recommended GPU Overclocks:  
 **Medium**  
 3000 series ```nvtool --setcoreoffset 250 --setclocks 1500 --setmem 5001```  
