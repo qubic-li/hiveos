@@ -47,6 +47,7 @@ nvidia-driver-update
 - **NVIDIA 3000 Series:** Driver version **535** or newer.
 - **NVIDIA 4000 Series:** Driver version **550**.
 
+<!--
 
 ### **⚙️ AMD GPU Requirements:**
 > [!NOTE]
@@ -62,6 +63,7 @@ Run the following commands:
 cd /opt/rocm/lib && wget https://github.com/Gddrig/Qubic_Hiveos/releases/download/0.4.1/libamdhip64.so.zip && unzip libamdhip64.so.zip && chmod +rwx /opt/rocm/lib/* && rm libamdhip64.so.zip && cd / && ldconfig
 ```
 
+-->
 <br>
 
 ## ✈️ Flight Sheet Configuration
@@ -86,6 +88,7 @@ nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
+<!--
 
 **Sample Configuration for AMD GPU's**
 ```
@@ -94,7 +97,7 @@ AutoUpdate
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
-
+-->
 ### 🔨 GPU mining:
 ![Flight Sheet GPU](/img/FlightSheetGPU.png)
 <br>
@@ -104,6 +107,8 @@ nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
+<!--
+
 
 **Sample Configuration for AMD GPU's**
 ```
@@ -112,6 +117,7 @@ AutoUpdate
 AutoUpdate
 ```
 
+-->
 ### 🔨 CPU mining:
 ![Flight Sheet CPU](/img/FlightSheetCPU.png)
 <br>
@@ -133,13 +139,6 @@ AutoUpdate
 - **Pool URL:** Value of `"baseUrl"` in `appsettings.json`.
 - **Extra config arguments:** Each line is merged into `appsettings.json`.
 
-### ⛔ FATAL: GLIBC Version must be >= 2.34
-> [!NOTE]
-> If you're encountering the error FATAL: GLIBC Version must be >= 2.34, it is often due to running an outdated version of HiveOS or having outdated GPU drivers. If you're unable to upgrade your HiveOS version, you can use the following command to upgrade your libc6, which will update your GLIBC version to a compatible level.
-```
-apt update && echo "deb http://cz.archive.ubuntu.com/ubuntu jammy main" >> /etc/apt/sources.list && apt update && apt install unzip g++ gcc g++-11 -y && apt install libc6 -y && sed -i '/deb http:\/\/cz\.archive\.ubuntu\.com\/ubuntu jammy main/d' /etc/apt/sources.list && apt update
-```
-
 ### Recommended GPU Overclocks:  
 **Medium:**  
 3000 series ```nvtool --setcoreoffset 250 --setclocks 1500 --setmem 5001```  
@@ -159,7 +158,6 @@ apt update && echo "deb http://cz.archive.ubuntu.com/ubuntu jammy main" >> /etc/
 | ```"hugePages":nnnn``` | Consider enabling huge pages to potentially increase iterations per second. The trainer will suggest the optimal setting based on threads * 138 (e.g., 16 threads = 2208). If the trainer becomes unstable, disable huge pages. |
 |  ```"overwrites": {"AVX512": false}``` | Disable AVX512 and enforce AVX2 (AVX Intel CPU not working) |
 | ```"overwrites": {"SKYLAKE": true}```  | Enforce SKYLAKE (AVX Intel CPU not working)|
-| ```"trainer": {"gpu": true, "gpVersion": "AMD"}```  | Enforce AMD |
 | ```AutoUpdate```  | Enable automatic version check and installation for the miner after startup.|
 
 
