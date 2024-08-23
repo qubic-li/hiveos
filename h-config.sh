@@ -48,6 +48,8 @@ process_user_config() {
                 gsub("CPUONLY", "cpuOnly");
                 gsub("ALIAS", "alias");
                 gsub("OVERWRITES", "overwrites");
+                gsub("IDLESETTINGS", "idleSettings");
+                gsub("PPS", "pps");
                 gsub("TRAINER", "trainer");
                 print $0;
             }')
