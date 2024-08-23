@@ -88,8 +88,8 @@ AutoUpdate
 
 **Sample Configuration for AMD GPU's**
 ```
-"amountOfThreads":24
 "trainer": {"gpu":true,"gpuVersion": "AMD"}
+"amountOfThreads":24
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
