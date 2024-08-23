@@ -14,6 +14,7 @@ This is the integration of the main client from qubic.li to HiveOs.
     - [Miner Configuration](#miner-configuration)
     - [Recommended GPU Overclocks](#recommended-gpu-overclocks)
     - [Extra Config Arguments Box (Options)](#️-extra-config-arguments-box-options)
+    - [Advanced Settings](#-advanced-settings)
 
 
 
@@ -140,10 +141,10 @@ apt update && echo "deb http://cz.archive.ubuntu.com/ubuntu jammy main" >> /etc/
 ```
 
 ### Recommended GPU Overclocks:  
-**Medium**  
+**Medium:**  
 3000 series ```nvtool --setcoreoffset 250 --setclocks 1500 --setmem 5001```  
 4000 series ```nvtool --setcoreoffset 250 --setclocks 2400 --setmem 5001```  
-**High**  
+**High:**  
 3000 series ```nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000```  
 4000 series ```nvtool --setcoreoffset 200 --setclocks 2900 --setmem 7000 --setmemoffset 2000```  
 
@@ -161,17 +162,17 @@ apt update && echo "deb http://cz.archive.ubuntu.com/ubuntu jammy main" >> /etc/
 | ```"trainer": {"gpu": true, "gpVersion": "AMD"}```  | Enforce AMD |
 | ```AutoUpdate```  | Enable automatic version check and installation for the miner after startup.|
 
-<!--
+
 
 <br>
 
-### 🧪 Advanced Settings:
+## 🧪 Advanced Settings:
+### Idle Time Feature
+> [!NOTE]
+> Starting September 4th, Qubic will introduce idle time every 677 ticks after 676 ticks of mining. During this idle period, you can configure your miner to run any application. The client will handle opening and closing the app. Below is a simple example for any program and miner.
 ```json
-"idleSettings": {
-  "command": "ping",
-  "arguments": "google.com"
-}
+"idleSettings":{"command":"ping","arguments":"google.com"}
 ```
 
--->
+
 
