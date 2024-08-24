@@ -121,8 +121,12 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
     let ac=0
     let rj=0
 
-    # Parse all GPU shares
+    # Parse GPU shares and SOLs separately
     gpu_shares=$(grep "GPU" "$log_name" | grep "Shares:" | tail -n 1)
+    if [ -z "$gpu_shares" ]; then
+        gpu_shares=$(grep "GPU" "$log_name" | grep "SOL:" | tail -n 1)
+    fi
+
     gpu_found=$(echo "$gpu_shares" | awk -F'|' '{print $2}' | awk '{print $2}' | cut -d '/' -f1)
     gpu_submit=$(echo "$gpu_shares" | awk -F'|' '{print $2}' | awk '{print $2}' | cut -d '/' -f2)
 
@@ -164,6 +168,22 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
         fi
     fi
 
+    # Parse CPU shares and SOLs separately
+    cpu_shares=$(grep "^CPU" "$log_name" | grep "Shares:" | tail -n 1)
+    if [ -z "$cpu_shares" ]; then
+        cpu_shares=$(grep "^CPU" "$log_name" | grep "SOL:" | tail -n 1)
+    fi
+
+    cpu_found=$(echo "$cpu_shares" | awk -F'|' '{print $2}' | awk '{print $2}' | cut -d '/' -f1)
+    cpu_submit=$(echo "$cpu_shares" | awk -F'|' '{print $2}' | awk '{print $2}' | cut -d '/' -f2)
+
+    # Ensure parsed values are not empty
+    [[ -z "$cpu_found" ]] && cpu_found=0
+    [[ -z "$cpu_submit" ]] && cpu_submit=0
+
+    let ac=$ac+$cpu_found
+    let rj=$rj+$((cpu_submit-cpu_found))
+
     if [[ $cpu_count -gt 0 ]]; then
         # Extract CPU hashrate by searching for the second '|' and getting the it/s value
         cpu_hs=$(grep "^CPU" "$log_name" | tail -n 1 | awk -F'|' '{print $3}' | awk '{print $1}')
@@ -174,18 +194,6 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
         temp[$gpu_count]="$cpu_temp"
         fan[$gpu_count]=""
         bus_numbers[$gpu_count]="null"
-
-        # Parse CPU shares
-        cpu_shares=$(grep "^CPU" "$log_name" | grep "Shares:" | tail -n 1)
-        cpu_found=$(echo "$cpu_shares" | awk -F'|' '{print $2}' | awk '{print $2}' | cut -d '/' -f1)
-        cpu_submit=$(echo "$cpu_shares" | awk -F'|' '{print $2}' | awk '{print $2}' | cut -d '/' -f2)
-
-        # Ensure parsed values are not empty
-        [[ -z "$cpu_found" ]] && cpu_found=0
-        [[ -z "$cpu_submit" ]] && cpu_submit=0
-
-        let ac=$ac+$cpu_found
-        let rj=$rj+$((cpu_submit-cpu_found))
     fi
 
     # Aggregate GPU and CPU hashrates
