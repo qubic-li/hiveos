@@ -2,21 +2,21 @@
 
 log_name="/path/to/your/logfile.log"
 
-# Define a function to calculate the miner version along with GPU and CPU information (if available).
+# Define a function to calculate the miner version
 get_miner_version() {
     local ver="${custom_version}"
 
-    # Append Epoch information to 'ver' only if 'epoh_runner' is defined.
+    # Append Epoch information
     if [ -n "${epoh_runner}" ]; then
         ver="${ver}, ${epoh_runner}"
     fi
 
-    # Append GPU runner information if defined, without "GPU:" prefix
+    # Append GPU runner information
     if [ -n "${gpu_runner}" ]; then
         ver="${ver}, ${gpu_runner}"
     fi
 
-    # Append CPU runner information if defined, without "CPU:" prefix
+    # Append CPU runner information
     if [ -n "${cpu_runner}" ]; then
         ver="${ver}, ${cpu_runner}"
     fi
@@ -24,17 +24,16 @@ get_miner_version() {
     echo "$ver"
 }
 
-# This function calculates the uptime of the miner by determining the time elapsed since the last modification of the log file.
 get_miner_uptime() {
     local uptime=0
     local log_time=$(stat --format='%Y' "$log_name")
 
-    # Check if the CPU configuration file exists. If it does, get its last modification time.
+    # Check if the CPU configuration file exists.
     if [ -e "$cpu_conf_name" ]; then
         local conf_time=$(stat --format='%Y' "$cpu_conf_name")
         let uptime=log_time-conf_time
 
-    # If CPU config file doesn't exist, check if GPU config file exists. If it does, get its last modification time.
+    # If CPU config file doesn't exist, check if GPU config file exists.
     elif [ -e "$gpu_conf_name" ]; then
         local conf_time=$(stat --format='%Y' "$gpu_conf_name")
         let uptime=log_time-conf_time
@@ -58,7 +57,7 @@ gpu_conf_name="/hive/miners/custom/qubminer/gpu/appsettings.json"
 
 custom_version=$(grep -Po "(?<=Starting Client ).*" "$log_name" | tail -n1)
 
-# New Runner Parsing: Extracting 'pplns cuda' and 'pplns cpu' from the log file
+# New Runner Parsing
 gpu_runner=$(grep -Po "(?<=Trainer: ).*(?= is starting)" "$log_name" | grep -i "cuda\|hip" | tail -n1)
 cpu_runner=$(grep -Po "(?<=Trainer: ).*(?= is starting)" "$log_name" | grep -i "cpu" | tail -n1)
 
