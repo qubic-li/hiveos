@@ -1,5 +1,5 @@
 # qubic.li - HiveOs Miner
-This is the integration of the main client from qubic.li to HiveOs.
+This is the integration of the main client from qubic.li into HiveOS.
 
 ![Qubminer](/img/Header.png)
 
@@ -27,6 +27,10 @@ This is the integration of the main client from qubic.li to HiveOs.
 
 ## :warning: HiveOs Mandatory Installation Instructions
 - The CPU running the Client must support **AVX2** or **AVX512** instructions.
+```sh
+cat /proc/cpuinfo | grep avx2
+```
+(If `avx2` appears in the results, use the AVX2 configuration.)
 - **16GB** or more RAM is recommended to enhance CPU performance.
 - **Higher RAM frequencies** contribute to better CPU performance.
 - **Avoid overloading** your CPU with threads; instead, aim to find the optimal balance.
@@ -44,8 +48,8 @@ hive-replace --stable --yes
 ```sh
 nvidia-driver-update
 ```
-- **NVIDIA 3000 Series:** Driver version **535** or newer.
-- **NVIDIA 4000 Series:** Driver version **550**.
+- **NVIDIA 3000 Series:** Driver version **535+** or newer.
+- **NVIDIA 4000 Series:** Driver version **550+**.
 
 <!--
 
@@ -76,18 +80,27 @@ cd /opt/rocm/lib && wget https://github.com/Gddrig/Qubic_Hiveos/releases/downloa
 - **Pass:** Not used.
   
 > [!NOTE]
-> Remove the nvtool line if you prefer to use the HiveOS dashboard for overclocking.
+> Remove the `nvtool` line if you prefer to use the HiveOS dashboard for overclocking.
 
 ### 🔨 GPU+CPU (Dual) mining:
 ![Flight Sheet Dual](/img/FlightSheetDual.png)
 <br>
-**Extra config arguments example:**
+**Extra Config Arguments Example:**
 ```
 nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
 "amountOfThreads":24
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
+**Extra Config Arguments Example for AVX2:**
+```
+nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
+"trainer":{"cpu":true,"cpuVersion":"GENERIC"}
+"amountOfThreads":24
+"accessToken":"YOUROWNTOKEN"
+AutoUp
+```
+
 <!--
 
 **Sample Configuration for AMD GPU's**
@@ -98,10 +111,11 @@ AutoUpdate
 AutoUpdate
 ```
 -->
+
 ### 🔨 GPU mining:
 ![Flight Sheet GPU](/img/FlightSheetGPU.png)
 <br>
-**Extra config arguments example:**
+**Extra Config Arguments Example:**
 ```
 nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
 "accessToken":"YOUROWNTOKEN"
@@ -121,9 +135,17 @@ AutoUpdate
 ### 🔨 CPU mining:
 ![Flight Sheet CPU](/img/FlightSheetCPU.png)
 <br>
-**Extra config arguments example:**
+**Extra Config Arguments Example for AVX512:**
 ```
 "cpuOnly":"yes"
+"amountOfThreads":24
+"accessToken":"YOUROWNTOKEN"
+AutoUpdate
+```
+**Extra Config Arguments Example for AVX2:**
+```
+"cpuOnly":"yes"
+"trainer":{"cpu":true,"cpuVersion":"GENERIC"}
 "amountOfThreads":24
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
@@ -145,23 +167,23 @@ AutoUpdate
 4000 series ```nvtool --setcoreoffset 250 --setclocks 2400 --setmem 5001```  
 **High:**  
 3000 series ```nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000```  
-4000 series ```nvtool --setcoreoffset 200 --setclocks 2900 --setmem 7000 --setmemoffset 2000```  
+4000 series ```nvtool --setcoreoffset 200 --setclocks 2700 --setmem 7000 --setmemoffset 2000```  
 
 
 ### ⚙️ Extra Config Arguments Box (Options):
 
-| Setting | Description                                                                                                                                                                                                                                  |
-| ---- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ```"accessToken":``` | This is your personal Token, which you can obtain from the Control Panel at qubic.li. |
-|  ```"amountOfThreads"``` | How many threads should be used for the AI Training.	|
-| ```"payoutId":``` | This is the ID you want to get token payout for your found solutions. |
-| ```"hugePages":nnnn``` | Consider enabling huge pages to potentially increase iterations per second. The trainer will suggest the optimal setting based on threads * 138 (e.g., 16 threads = 2208). If the trainer becomes unstable, disable huge pages. |
-|  ```"overwrites": {"AVX512": false}``` | Disable AVX512 and enforce AVX2 (AVX Intel CPU not working) |
-| ```"overwrites": {"SKYLAKE": true}```  | Enforce SKYLAKE (AVX Intel CPU not working)|
-| ```AutoUpdate```  | Enable automatic version check and installation for the miner after startup.|
-
-
-
+| Setting | Default Value |Description                                                                                                                                                                                                                                  |
+| ---- |------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ```"accessToken":``` | JWT Token | This is your personal Token, which you can obtain from the Control Panel at qubic.li. |
+|  ```"amountOfThreads":``` | `1` | How many threads should be used for the AI Training.	|
+| ```"payoutId":``` | `Null` | This is the ID you want to get token payout for your found solutions. |
+| ```isPps:```  | `False` | Set this to `true` to enable `PPS` (Pay Per Share) mode. When enabled, you'll receive a fixed reward for each valid share you submit, regardless of whether a solution is found.|
+| ```useLiveConnection:```  | `True` or `False` | Set this to `true` to enhance backend performance, enabling instant ID switching and idling. Note: This requires a constant internet connection.
+| ```"hugePages":nnnn``` |  | Consider enabling huge pages to potentially increase iterations per second. The trainer will suggest the optimal setting based on threads * 138 (e.g., 16 threads = 2208). If the trainer becomes unstable, disable huge pages. |
+| ```"trainer":{"cpuVersion":"GENERIC"}```  | | Use this setting to force the AVX2 runner on CPUs that do not support AVX512. |
+| ```"trainer":{"cpuVersion":"AVX512"}```  | | Set this to AVX512 if auto-selection does not work. |
+| ```"idleSettings"```  | | Set the command to target the program you want to run, and set the argument for the specific action the program needs to perform.|
+| ```AutoUpdate```  | | Enable automatic version check and installation for the miner after startup.|
 <br>
 
 ## 🧪 Advanced Settings:
