@@ -171,6 +171,8 @@ AutoUpdate
 
 
 ### ⚙️ Extra Config Arguments Box (Options):
+> [!IMPORTANT]
+> The ```"isPps"``` and ```"useLiveConnection"``` features currently only works with beta access.
 
 | Setting | Default Value |Description                                                                                                                                                                                                                                  |
 | ---- |------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
