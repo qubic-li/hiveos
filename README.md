@@ -1,66 +1,63 @@
-# Qubic HiveOs Miner
-This is the integration of the main client from qubic.li to HiveOs.
+# qubic.li - HiveOs Miner
+This is the integration of the main client from qubic.li into HiveOS.
 
 ![Qubminer](/img/Header.png)
 
-Use URL in HiveOs flight sheet:
-<br>
-https://github.com/qubic-li/hiveos/releases/download/latest/qubminer-latest.tar.gz
-
-- [Qubic HiveOs Miner](#qubic-hiveos-miner)
-  - [Qubic Resources](#qubic-resources)
-  - [:warning: HiveOs Mandatory Installation Instructions](#warning-hiveos-mandatory-installation-instructions)
-  - [Flight Sheet Configuration](#flight-sheet-configuration)
-    - [GPU+CPU (Dual) mining:](#gpucpu-dual-mining)
-    - [GPU mining:](#gpu-mining)
-    - [CPU mining:](#cpu-mining)
-  - [:wrench: Hive Os Settings](#wrench-hive-os-settings)
+- [Qubic HiveOs Miner](#qubicli---hiveos-miner)
+  - [Qubic Resources](#-qubic-resources)
+  - [HiveOs Mandatory Installation Instructions](#warning-hiveos-mandatory-installation-instructions)
+  - [✈️ Flight Sheet Configuration:](#️-flight-sheet-configuration)
+    - [GPU+CPU (Dual) mining](#-gpucpu-dual-mining)
+    - [GPU mining](#-gpu-mining)
+    - [CPU mining](#-cpu-mining)
+- 🔧 [Hive Os Settings](#-hive-os-settings)
     - [Miner Configuration](#miner-configuration)
-    - [Recommended GPU overclocks :](#recommended-gpu-overclocks-)
-    - [Extra config arguments Box (options):](#extra-config-arguments-box-options)
+    - [Recommended GPU Overclocks](#recommended-gpu-overclocks)
+    - [Extra Config Arguments Box (Options)](#️-extra-config-arguments-box-options)
+    - [Advanced Settings](#-advanced-settings)
 
 
 
-## Qubic Resources
+## 📚 Qubic Resources
 
+- [Official Qubic.li Client](https://github.com/qubic-li/client?tab=readme-ov-file#download)
 - [Qubic Website](https://web.qubic.li/)
-- [Qubic Web Wallet](https://wallet.qubic.li/)
+- [Qubic Web Wallet](https://wallet.qubic.org/)
 - [Qubic Mining Pool](https://app.qubic.li/public/)
-- [Official Qubic Client](https://github.com/qubic-li/client?tab=readme-ov-file#download)
 
 ## :warning: HiveOs Mandatory Installation Instructions
-- The CPU where you run the Client must support AVX2 or AVX512 CPU instructions.
+- The CPU running the Client must support **AVX2** or **AVX512** instructions.
 ```sh
 cat /proc/cpuinfo | grep avx2
 ```
-(check if `avx2` is in the result)
-- RAM should be >= 16GB to improve CPU performance.
-- Higher RAM frequencies improve CPU performance.
-- Do not overload your CPUs with threads; instead, aim to find the sweet spot.
+(If `avx2` appears in the results, use the AVX2 configuration.)
+- **16GB** or more RAM is recommended to enhance CPU performance.
+- **Higher RAM frequencies** contribute to better CPU performance.
+- **Avoid overloading** your CPU with threads; instead, aim to find the optimal balance.
 
-- To run the Qubic miner, you need the beta version of HiveOS. Run:
+- To run the Qubic miner, you need the latest stable version of HiveOS.
 ```sh
-/hive/sbin/hive-replace --beta --yes
-```
-- You need GLIBC version 2.34 or higher. During the installation process, select "Yes" and press Enter.
-Run the following commands:
-```sh
-apt update && echo "deb http://cz.archive.ubuntu.com/ubuntu jammy main" >> /etc/apt/sources.list && apt update && apt install unzip g++ gcc g++-11 -y && apt install libc6 -y && sed -i '/deb http:\/\/cz\.archive\.ubuntu\.com\/ubuntu jammy main/d' /etc/apt/sources.list && apt update
+hive-replace --stable --yes
 ```
 
-**For NVIDIA cards:**
-- Cuda 12+ drivers (525+) 
-- Cuda 12 for 1000 series must be 535+ (or newer)
-```sh
-nvidia-driver-update 535.146.02
-```
-- For 4000 series use version 550+
-```sh
-nvidia-driver-update 550.54.14
-```
+<br/>
 
-**For AMD cards:**
-- Install version 5.7.3 drivers using the command:
+### **⚙️ NVIDIA GPU Requirements:**
+> [!NOTE]
+> To update your NVIDIA GPU driver on HiveOS, please run the following command:
+```sh
+nvidia-driver-update
+```
+- **NVIDIA 3000 Series:** Driver version **535+** or newer.
+- **NVIDIA 4000 Series:** Driver version **550+**.
+
+<!--
+
+### **⚙️ AMD GPU Requirements:**
+> [!NOTE]
+> AMD support may not be available all the time; availability depends on the epoch.
+
+- Install version 5.7.3 driver using the command:
 ```sh
 amd-ocl-install 5.7 5.7
 ```
@@ -69,104 +66,133 @@ Run the following commands:
 ```sh
 cd /opt/rocm/lib && wget https://github.com/Gddrig/Qubic_Hiveos/releases/download/0.4.1/libamdhip64.so.zip && unzip libamdhip64.so.zip && chmod +rwx /opt/rocm/lib/* && rm libamdhip64.so.zip && cd / && ldconfig
 ```
-- Reboot your RIG
-- If you encounter the error: `Looks like the trainer isn't working properly: ( check your config and he requirements.`
-you need to change your subscription plan to "Fixed Reward 85%"
 
+-->
 <br>
 
+## ✈️ Flight Sheet Configuration
+
+- **Miner name:** Automatically filled with the installation URL.
+- **Installation URL:** `https://github.com/qubic-li/hiveos/releases/download/latest/qubminer-latest.tar.gz`
+- **Hash algorithm:** Not used, leave as `----`.
+- **Wallet and worker template:** Enter your `worker name`. 
+- **Pool URL:** Use `https://mine.qubic.li/` for the pool `app.qubic.li`.
+- **Pass:** Not used.
+  
 > [!NOTE]
-> The defualt configuration is vor NVIDIA. To enable AMD GPU you need to add `"trainer": {"gpu":true,"gpuVersion": "AMD"}` to Extra config arguments. 
+> Remove the `nvtool` line if you prefer to use the HiveOS dashboard for overclocking.
 
-
-> [!IMPORTANT]
-> AMD Version was tested with hiveos version `6.1.0-hiveos` and AMD drivers `5.7.3`. Please take this as minimum requirenments.
-> AMD Version is currently only allowed in `qubic.li CPU/GPU Mining (Fixed Reward 85%)`
-
-
-## Flight Sheet Configuration
-The startup script takes values from the flight sheet to complete the default configuration (`appsettings_global.json`).
-
-Each time the miner starts, the `appsettings.json` file is recreated
-
-
-> [!IMPORTANT]
-> For CPU you have to define which Version should be used. The `cpuVersion` propery can be used. Please refer to https://github.com/qubic-li/client/?tab=readme-ov-file#qli-trainer-options for a list of available versions. You can also find there all other available options.
-
-### GPU+CPU (Dual) mining:
+### 🔨 GPU+CPU (Dual) mining:
 ![Flight Sheet Dual](/img/FlightSheetDual.png)
 <br>
-Extra config arguments exemple:
+**Extra Config Arguments Example:**
 ```
 nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
+"amountOfThreads":24
 "accessToken":"YOUROWNTOKEN"
-"amountOfThreads":4
-"trainer": {"cpuVersion": "GENERIC"}
+AutoUpdate
 ```
+**Extra Config Arguments Example for AVX2:**
+```
+nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
+"trainer":{"cpu":true,"cpuVersion":"GENERIC"}
+"amountOfThreads":24
+"accessToken":"YOUROWNTOKEN"
+AutoUp
+```
+
+<!--
 
 **Sample Configuration for AMD GPU's**
 ```
-"amountOfThreads":4
-"trainer": {"gpu":true,"gpuVersion": "AMD", "cpuVersion": "GENERIC"}
+"trainer": {"gpu":true,"gpuVersion": "AMD"}
+"amountOfThreads":24
 "accessToken":"YOUROWNTOKEN"
+AutoUpdate
 ```
+-->
 
-### GPU mining:
+### 🔨 GPU mining:
 ![Flight Sheet GPU](/img/FlightSheetGPU.png)
 <br>
-Extra config arguments exemple:
+**Extra Config Arguments Example:**
 ```
 nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
 "accessToken":"YOUROWNTOKEN"
+AutoUpdate
 ```
+<!--
+
 
 **Sample Configuration for AMD GPU's**
 ```
 "trainer": {"gpu":true,"gpuVersion": "AMD"}
 "accessToken":"YOUROWNTOKEN"
+AutoUpdate
 ```
 
-### CPU mining:
+-->
+### 🔨 CPU mining:
 ![Flight Sheet CPU](/img/FlightSheetCPU.png)
 <br>
-Extra config arguments exemple:
+**Extra Config Arguments Example for AVX512:**
 ```
 "cpuOnly":"yes"
 "amountOfThreads":24
 "accessToken":"YOUROWNTOKEN"
-"trainer": {"cpu":true,"cpuVersion": "GENERIC"}
+AutoUpdate
+```
+**Extra Config Arguments Example for AVX2:**
+```
+"cpuOnly":"yes"
+"trainer":{"cpu":true,"cpuVersion":"GENERIC"}
+"amountOfThreads":24
+"accessToken":"YOUROWNTOKEN"
+AutoUpdate
 ```
 
-## :wrench: Hive Os Settings
+## 🔧 Hive Os Settings
+> [!NOTE]
+> The startup script pulls values from the flight sheet to configure the default settings (appsettings_global.json). Each time the miner starts, the appsettings.json file is recreated.
 
 ### Miner Configuration
 
-- **Miner name:** Automatically filled with the installation URL.
-- **Installation URL:** `https://github.com/qubic-li/hiveos/releases/download/latest/qubminer-latest.tar.gz`
-- **Hash algorithm:** Not used, leave as `----`.
-- **Wallet and worker template:** Worker name. Value of `"alias"` in `appsettings.json`.
-- **Pool URL:** Value of `"baseUrl"` in `appsettings.json`. Use `https://mine.qubic.li/` for the pool `app.qubic.li`.
-- **Pass:** Not used.
+- **Wallet and worker template:** Value of `"alias"` in `appsettings.json`.
+- **Pool URL:** Value of `"baseUrl"` in `appsettings.json`.
 - **Extra config arguments:** Each line is merged into `appsettings.json`.
 
-### Recommended GPU overclocks :  
-**Medium**  
+### Recommended GPU Overclocks:  
+**Medium:**  
 3000 series ```nvtool --setcoreoffset 250 --setclocks 1500 --setmem 5001```  
 4000 series ```nvtool --setcoreoffset 250 --setclocks 2400 --setmem 5001```  
-**High**  
+**High:**  
 3000 series ```nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000```  
-4000 series ```nvtool --setcoreoffset 200 --setclocks 2900 --setmem 7000 --setmemoffset 2000```  
+4000 series ```nvtool --setcoreoffset 200 --setclocks 2700 --setmem 7000 --setmemoffset 2000```  
 
 
-### Extra config arguments Box (options):
+### ⚙️ Extra Config Arguments Box (Options):
 
-| Setting | Description                                                                                                                                                                                                                                  |
-| ---- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ```"accessToken":``` | This is you personal JWT Token which you can obtain from the Control Panel at qubic.li                                                                                                                                                       |
-| ```"payoutId":``` | This is the ID you want to get token payout for your found solutions.                                                                                                                                                                        |
-| ```"hugePages":nnnn``` | Depending on your environment you might want to enable huge pages. This can increase your iterations per second. The trainer will tell you what is the optimal setting when it detects a wrong value. The number depends on the number of threads: nb_threads * 52 (e.g., 16 * 52 = 832). If trainer is unstable please remove. |
-|  ```"overwrites": {"AVX512": false}``` | Disable AVX512 and enforce AVX2 (AVX Intel CPU not working)                                                                                                                                                                                  |
-| ```"overwrites": {"SKYLAKE": true}```  | Enforce SKYLAKE (AVX Intel CPU not working)                                                                                                                                                                                                  |
-| ```"trainer": {"gpu": true, "gpVersion": "AMD"}```  | Enforce AMD                                                                                                                                                                                                  |
-| ```AutoUpdate```  | Enable to check for a new version of the miner after starting it, and automatically install                                                                                                                                                                                                                                       |
+| Setting | Default Value |Description                                                                                                                                                                                                                                  |
+| ---- |------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ```"accessToken":``` | JWT Token | This is your personal Token, which you can obtain from the Control Panel at qubic.li. |
+|  ```"amountOfThreads":``` | `1` | How many threads should be used for the AI Training.	|
+| ```"payoutId":``` | `Null` | This is the ID you want to get token payout for your found solutions. |
+| ```isPps:```  | `False` | Set this to `true` to enable `PPS` (Pay Per Share) mode. When enabled, you'll receive a fixed reward for each valid share you submit, regardless of whether a solution is found.|
+| ```useLiveConnection:```  | `True` or `False` | Set this to `true` to enhance backend performance, enabling instant ID switching and idling. Note: This requires a constant internet connection.
+| ```"hugePages":nnnn``` |  | Consider enabling huge pages to potentially increase iterations per second. The trainer will suggest the optimal setting based on threads * 138 (e.g., 16 threads = 2208). If the trainer becomes unstable, disable huge pages. |
+| ```"trainer":{"cpuVersion":"GENERIC"}```  | | Use this setting to force the AVX2 runner on CPUs that do not support AVX512. |
+| ```"trainer":{"cpuVersion":"AVX512"}```  | | Set this to AVX512 if auto-selection does not work. |
+| ```"idleSettings"```  | | Set the command to target the program you want to run, and set the argument for the specific action the program needs to perform.|
+| ```AutoUpdate```  | | Enable automatic version check and installation for the miner after startup.|
 <br>
+
+## 🧪 Advanced Settings:
+### Idle Time Feature
+> [!NOTE]
+> Starting September 4th, Qubic will introduce idle time every 677 ticks after 676 ticks of mining. During this idle period, you can configure your miner to run any application. The client will handle opening and closing the app. Below is a simple example for any program and miner.
+```json
+"idleSettings":{"command":"ping","arguments":"google.com"}
+```
+
+
+
