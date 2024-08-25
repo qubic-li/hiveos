@@ -59,6 +59,9 @@ process_user_config() {
             # Check if modifications were made, if not, use the original parameter
             [[ "$param" != "$modified_param" ]] && param=$modified_param
 
+            if [[ "$value" =~ \$\(.*\) ]]; then
+                value=$(eval echo "$value")
+            fi
             # Check if value exists before updating Settings
             if [[ ! -z "$value" ]]; then
                 if [[ "$param" == "overwrites" || "$param" == "trainer" ]]; then
