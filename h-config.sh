@@ -1,4 +1,3 @@
-# Function for processing user configuration
 process_user_config() {
     while IFS= read -r line; do
         [[ -z $line ]] && continue
@@ -63,21 +62,34 @@ process_user_config() {
             if [[ ! -z "$value" ]]; then
                 if [[ "$param" == "overwrites" || "$param" == "trainer" ]]; then
                     Settings=$(jq -s '.[0] * .[1]' <<< "$Settings {$line}")
+                    SettingsGpu=$(jq -s '.[0] * .[1]' <<< "$SettingsGpu {$line}")
                 elif [[ "$param" == "idleSettings" ]]; then
-                    # Parse idleSettings as JSON
-                    Settings=$(jq --argjson idleSettings "$value" '.idleSettings = $idleSettings' <<< "$Settings")
+                    # Determine whether this is for GPU or CPU
+                    gpuOnly=$(jq -r '.gpuOnly // empty' <<< "$value")
+
+                    if [[ "$gpuOnly" == "true" ]]; then
+                        # Remove gpuOnly flag and write idleSettings to GPU folder
+                        value=$(jq 'del(.gpuOnly)' <<< "$value")
+                        SettingsGpu=$(jq --argjson idleSettings "$value" '.idleSettings = $idleSettings' <<< "$SettingsGpu")
+                    else
+                        # Write idleSettings to CPU folder
+                        Settings=$(jq --argjson idleSettings "$value" '.idleSettings = $idleSettings' <<< "$Settings")
+                    fi
                 elif [[ "$param" == "accessToken" ]]; then
                     value=$(echo "$value" | sed 's/^"//;s/"$//')
                     Settings=$(jq --arg value "$value" '.accessToken = $value' <<< "$Settings")
+                    SettingsGpu=$(jq --arg value "$value" '.accessToken = $value' <<< "$SettingsGpu")
                 elif [[ "$param" == "isPps" ]]; then
                     if [[ "$value" == "true" || "$value" == "false" ]]; then
                         Settings=$(jq --argjson value "$value" '.isPps = $value' <<< "$Settings")
+                        SettingsGpu=$(jq --argjson value "$value" '.isPps = $value' <<< "$SettingsGpu")
                     else
                         echo "Invalid value for isPps: $value. It must be 'true' or 'false'. Skipping this entry."
                     fi
                 elif [[ "$param" == "useLiveConnection" ]]; then
                     if [[ "$value" == "true" || "$value" == "false" ]]; then
                         Settings=$(jq --argjson value "$value" '.useLiveConnection = $value' <<< "$Settings")
+                        SettingsGpu=$(jq --argjson value "$value" '.useLiveConnection = $value' <<< "$SettingsGpu")
                     else
                         echo "Invalid value for useLiveConnection: $value. It must be 'true' or 'false'. Skipping this entry."
                     fi
@@ -85,13 +97,16 @@ process_user_config() {
                     if [[ "$param" == "trainer.cpuVersion" ]]; then
                         Settings=$(jq --arg value "$value" '.trainer.cpuVersion = $value' <<< "$Settings")
                     elif [[ "$param" == "trainer.gpuVersion" ]]; then
-                        Settings=$(jq --arg value "$value" '.trainer.gpuVersion = $value' <<< "$Settings")
+                        SettingsGpu=$(jq --arg value "$value" '.trainer.gpuVersion = $value' <<< "$SettingsGpu")
                     elif [[ "$value" == "null" ]]; then
                         Settings=$(jq --arg param "$param" '.[$param] = null' <<< "$Settings")
+                        SettingsGpu=$(jq --arg param "$param" '.[$param] = null' <<< "$SettingsGpu")
                     elif [[ "$value" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
                         Settings=$(jq --arg param "$param" --argjson value "$value" '.[$param] = ($value | tonumber)' <<< "$Settings")
+                        SettingsGpu=$(jq --arg param "$param" --argjson value "$value" '.[$param] = ($value | tonumber)' <<< "$SettingsGpu")
                     else
                         Settings=$(jq --arg param "$param" --arg value "$value" '.[$param] = $value' <<< "$Settings")
+                        SettingsGpu=$(jq --arg param "$param" --arg value "$value" '.[$param] = $value' <<< "$SettingsGpu")
                     fi
                 fi
             fi
@@ -104,6 +119,9 @@ process_user_config() {
 # Processing global settings
 Settings=$(jq -r '.Settings' "/hive/miners/custom/$CUSTOM_NAME/appsettings_global.json" | envsubst)
 
+# Initialize GPU settings as well
+SettingsGpu=$Settings
+
 # Delete old settings
 eval "rm -rf /hive/miners/custom/$CUSTOM_NAME/cpu/appsettings.json"
 eval "rm -rf /hive/miners/custom/$CUSTOM_NAME/gpu/appsettings.json"
@@ -111,13 +129,17 @@ eval "rm -rf /hive/miners/custom/$CUSTOM_NAME/gpu/appsettings.json"
 # Processing the template
 if [[ ! -z $CUSTOM_TEMPLATE ]]; then
     Settings=$(jq --null-input --argjson Settings "$Settings" --arg alias "$CUSTOM_TEMPLATE" '$Settings + {$alias}')
+    SettingsGpu=$(jq --null-input --argjson SettingsGpu "$SettingsGpu" --arg alias "$CUSTOM_TEMPLATE" '$SettingsGpu + {$alias}')
 fi
 
 # Processing user configuration
 [[ ! -z $CUSTOM_USER_CONFIG ]] && process_user_config
 
 # Adding URL settings
-[[ ! -z $CUSTOM_URL ]] && Settings=$(jq --null-input --argjson Settings "$Settings" --arg baseUrl "$CUSTOM_URL" '$Settings + {$baseUrl}')
+if [[ ! -z $CUSTOM_URL ]]; then
+    Settings=$(jq --null-input --argjson Settings "$Settings" --arg baseUrl "$CUSTOM_URL" '$Settings + {$baseUrl}')
+    SettingsGpu=$(jq --null-input --argjson SettingsGpu "$SettingsGpu" --arg baseUrl "$CUSTOM_URL" '$SettingsGpu + {$baseUrl}')
+fi
 
 # Check and modify Settings for hugePages parameter
 if [[ $(jq '.hugePages' <<< "$Settings") != null ]]; then
@@ -129,7 +151,7 @@ fi
 
 # Additional check in the Settings for only CPU mining
 if [[ $(jq '.cpuOnly == "yes"' <<< "$Settings") == false ]]; then
-    SettingsGpu=$(jq '.alias |= . + "-gpu" | .trainer.cpu = false | .trainer.gpu = true | .amountOfThreads = 0 | del(.hugePages)' <<< "$Settings")
+    SettingsGpu=$(jq '.alias |= . + "-gpu" | .trainer.cpu = false | .trainer.gpu = true | .amountOfThreads = 0 | del(.hugePages)' <<< "$SettingsGpu")
     echo "{\"Settings\":$SettingsGpu}" | jq . > "/hive/miners/custom/$CUSTOM_NAME/gpu/appsettings.json"
 fi
 
