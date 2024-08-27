@@ -137,14 +137,14 @@ AutoUpdate
 <br>
 **Extra Config Arguments Example for AVX512:**
 ```
-"cpuOnly":"yes"
+"cpuOnly":yes
 "amountOfThreads":24
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
 **Extra Config Arguments Example for AVX2:**
 ```
-"cpuOnly":"yes"
+"cpuOnly":yes
 "trainer":{"cpu":true,"cpuVersion":"GENERIC"}
 "amountOfThreads":24
 "accessToken":"YOUROWNTOKEN"
