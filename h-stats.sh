@@ -190,10 +190,13 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
         echo "Extracted CPU Hashrate: $cpu_hs"
         [[ -z $cpu_hs ]] && cpu_hs=0
         let cpu_hs_tot=$cpu_hs_tot+$cpu_hs
-        hs[$gpu_count]=$cpu_hs_tot
-        temp[$gpu_count]="$cpu_temp"
-        fan[$gpu_count]=""
-        bus_numbers[$gpu_count]="null"
+        
+        # Use index for CPU data to avoid overwriting GPU data
+        cpu_index=$gpu_count
+        hs[$cpu_index]=$cpu_hs_tot
+        temp[$cpu_index]="$cpu_temp"
+        fan[$cpu_index]=""
+        bus_numbers[$cpu_index]="null"
     fi
 
     # Aggregate GPU and CPU hashrates
