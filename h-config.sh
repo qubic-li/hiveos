@@ -2,7 +2,7 @@ process_user_config() {
     while IFS= read -r line; do
         [[ -z $line ]] && continue
 
-        # Check if the line starts with 'nvtool ' and execute it using eval
+        # Check if the line starts with nvtool and execute it using eval
         if [[ ${line:0:7} = "nvtool " ]]; then
             eval "$line"
         elif [[ ${line:0:10} = "AutoUpdate" ]]; then
@@ -58,21 +58,28 @@ process_user_config() {
             # Check if modifications were made, if not, use the original parameter
             [[ "$param" != "$modified_param" ]] && param=$modified_param
 
-            # Check if value exists before updating Settings
+            # Handle cpuOnly parameter
+            if [[ "$param" == "cpuOnly" ]]; then
+                if [[ "$value" == "\"true\"" || "$value" == "true" ]]; then
+                    Settings=$(jq --arg value "true" '.cpuOnly = $value' <<< "$Settings")
+                    SettingsGpu=$(jq --arg value "true" '.cpuOnly = $value' <<< "$SettingsGpu")
+                else
+                    echo "Invalid value for cpuOnly: $value. It must be '\"true\"' or 'true'. Skipping this entry."
+                fi
+                continue
+            fi
+
+            # General processing for other parameters
             if [[ ! -z "$value" ]]; then
                 if [[ "$param" == "overwrites" || "$param" == "trainer" ]]; then
                     Settings=$(jq -s '.[0] * .[1]' <<< "$Settings {$line}")
                     SettingsGpu=$(jq -s '.[0] * .[1]' <<< "$SettingsGpu {$line}")
                 elif [[ "$param" == "idleSettings" ]]; then
-                    # Determine whether this is for GPU or CPU
                     gpuOnly=$(jq -r '.gpuOnly // empty' <<< "$value")
-
                     if [[ "$gpuOnly" == "true" ]]; then
-                        # Remove gpuOnly flag and write idleSettings to GPU folder
                         value=$(jq 'del(.gpuOnly)' <<< "$value")
                         SettingsGpu=$(jq --argjson idleSettings "$value" '.idleSettings = $idleSettings' <<< "$SettingsGpu")
                     else
-                        # Write idleSettings to CPU folder
                         Settings=$(jq --argjson idleSettings "$value" '.idleSettings = $idleSettings' <<< "$Settings")
                     fi
                 elif [[ "$param" == "accessToken" ]]; then
@@ -150,13 +157,13 @@ if [[ $(jq '.hugePages' <<< "$Settings") != null ]]; then
 fi
 
 # Additional check in the Settings for only CPU mining
-if [[ $(jq '.cpuOnly == "yes"' <<< "$Settings") == false ]]; then
-    SettingsGpu=$(jq '.alias |= . + "-gpu" | .trainer.cpu = false | .trainer.gpu = true | .amountOfThreads = 0 | del(.hugePages)' <<< "$SettingsGpu")
-    echo "{\"Settings\":$SettingsGpu}" | jq . > "/hive/miners/custom/$CUSTOM_NAME/gpu/appsettings.json"
-fi
-
-# Additional check and modification in the Settings for CPU mining
-if [[ $(jq '.cpuOnly == "yes" or .amountOfThreads != 0' <<< "$Settings") == true ]]; then
+if [[ $(jq '.cpuOnly == "true" or .amountOfThreads != 0' <<< "$Settings") == true ]]; then
     Settings=$(jq '.alias |= . + "-cpu" | .trainer.cpu = true | .trainer.gpu = false | .allowHwInfoCollect = false | del(.overwrites.CUDA)' <<< "$Settings")
     echo "{\"Settings\":$Settings}" | jq . > "/hive/miners/custom/$CUSTOM_NAME/cpu/appsettings.json"
+fi
+
+# Additional check and modification in the Settings for GPU mining
+if [[ $(jq '.cpuOnly == "true"' <<< "$Settings") == false ]]; then
+    SettingsGpu=$(jq '.alias |= . + "-gpu" | .trainer.cpu = false | .trainer.gpu = true | .amountOfThreads = 0 | del(.hugePages)' <<< "$SettingsGpu")
+    echo "{\"Settings\":$SettingsGpu}" | jq . > "/hive/miners/custom/$CUSTOM_NAME/gpu/appsettings.json"
 fi
