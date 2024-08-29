@@ -1,44 +1,28 @@
 #!/bin/bash
 
+# Set the log file path
 log_name="/path/to/your/logfile.log"
 
-# Define a function to calculate the miner version
+# Function to calculate the miner version
 get_miner_version() {
     local ver="${custom_version}"
-
-    # Append Epoch information
-    if [ -n "${epoh_runner}" ]; then
-        ver="${ver}, ${epoh_runner}"
-    fi
-
-    # Append GPU runner information
-    if [ -n "${gpu_runner}" ]; then
-        ver="${ver}, ${gpu_runner}"
-    fi
-
-    # Append CPU runner information
-    if [ -n "${cpu_runner}" ]; then
-        ver="${ver}, ${cpu_runner}"
-    fi
-
+    [[ -n "${epoh_runner}" ]] && ver="${ver}, ${epoh_runner}"
+    [[ -n "${gpu_runner}" ]] && ver="${ver}, ${gpu_runner}"
+    [[ -n "${cpu_runner}" ]] && ver="${ver}, ${cpu_runner}"
     echo "$ver"
 }
 
+# Function to calculate miner uptime
 get_miner_uptime() {
     local uptime=0
     local log_time=$(stat --format='%Y' "$log_name")
-
-    # Check if the CPU configuration file exists.
     if [ -e "$cpu_conf_name" ]; then
         local conf_time=$(stat --format='%Y' "$cpu_conf_name")
         let uptime=log_time-conf_time
-
-    # If CPU config file doesn't exist, check if GPU config file exists.
     elif [ -e "$gpu_conf_name" ]; then
         local conf_time=$(stat --format='%Y' "$gpu_conf_name")
         let uptime=log_time-conf_time
     fi
-
     echo $uptime
 }
 
@@ -49,21 +33,20 @@ get_log_time_diff() {
     echo $a
 }
 
+# Set file paths
 log_basename="/var/log/miner/custom/custom"
 log_name="$log_basename.log"
 log_head_name="${log_basename}_head.log"
 cpu_conf_name="/hive/miners/custom/qubminer/cpu/appsettings.json"
 gpu_conf_name="/hive/miners/custom/qubminer/gpu/appsettings.json"
 
+# Extract version and runner information
 custom_version=$(grep -Po "(?<=Starting Client ).*" "$log_name" | tail -n1)
-
-# New Runner Parsing
 gpu_runner=$(grep -Po "(?<=Trainer: ).*(?= is starting)" "$log_name" | grep -i "cuda\|hip" | tail -n1)
 cpu_runner=$(grep -Po "(?<=Trainer: ).*(?= is starting)" "$log_name" | grep -i "cpu" | tail -n1)
-
-# Epoch Runner Parsing
 epoh_runner=$(grep -Po "E:\d+" "$log_name" | tail -n1)
 
+# Check if the log file is recent enough
 diffTime=$(get_log_time_diff)
 maxDelay=300
 
@@ -71,73 +54,42 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
     ver=$(get_miner_version)
     hs_units="hs"
     algo="qubic"
-    
     uptime=$(get_miner_uptime)
     [[ $uptime -lt 60 ]] && head -n 150 $log_name > $log_head_name
 
-    # Calculating CPU and GPU count
-    cpu_count=$(grep "threads are used" "$log_head_name" | tail -n 1 | cut -d " " -f4)
-    if [ -z "$cpu_count" ] && tail -n 1 "$log_head_name" | grep -q "Your Alias is .*-cpu"; then
-        cpu_count=1
-    else
-        cpu_count=0
-    fi
+    # Detect CPU and GPU usage
+    cpu_count=$(grep "threads are used" "$log_name" | tail -n 1 | cut -d " " -f4)
+    [[ -z "$cpu_count" ]] && grep -q "Your Alias is .*-cpu" "$log_name" && cpu_count=1
+    [[ -z "$cpu_count" ]] && cpu_count=0
 
-    gpu_count=$(grep -E "CUDA devices are used|ROCM devices are used" "$log_head_name" | tail -n 1 | cut -d " " -f4)
+    gpu_count=$(grep -E "CUDA devices are used|ROCM devices are used" "$log_name" | tail -n 1 | cut -d " " -f4)
     [[ -z $gpu_count ]] && gpu_count=0
 
-    if [ $cpu_count -eq 0 ] || [ $gpu_count -eq 0 ]; then
-        echo "..."
-        grep -E "threads are used|CUDA devices are used|ROCM devices are used|Your Alias is .*-cpu" "$log_name" | tail -n 100 > $log_head_name
-
-        cpu_count=$(grep "threads are used" "$log_head_name" | tail -n 1 | cut -d " " -f4)
-        if [ -z "$cpu_count" ] && tail -n 1 "$log_head_name" | grep -q "Your Alias is .*-cpu"; then
-            cpu_count=1
-        else
-            cpu_count=0
-        fi
-
-        gpu_count=$(grep -E "CUDA devices are used|ROCM devices are used" "$log_head_name" | tail -n 1 | cut -d " " -f4)
-        [[ -z $gpu_count ]] && gpu_count=0
+    # Fallback detection if no CPU or GPU found
+    if [ $cpu_count -eq 0 ] && [ $gpu_count -eq 0 ]; then
+        grep -q "CPU" "$log_name" && cpu_count=1
+        grep -q "GPU" "$log_name" && gpu_count=1
     fi
 
-    # Only gather CPU temperature if CPUs are being used
-    if [[ $cpu_count -gt 0 ]]; then
-        cpu_temp=$(cpu-temp)
-        [[ -z $cpu_temp ]] && cpu_temp=null
-    else
-        cpu_temp=null
-    fi
+    # Get CPU temperature if CPU is used
+    [[ $cpu_count -gt 0 ]] && cpu_temp=$(cpu-temp) || cpu_temp=null
 
-    echo ----------
-    echo "CPU Count: $cpu_count"
-    echo "GPU Count: $gpu_count"
-    echo "Runner Info: $ver"
-    echo ----------
+    # Initialize arrays and counters
+    declare -a hs temp fan bus_numbers
+    let gpu_hs_tot=0 cpu_hs_tot=0 ac=0 rj=0
 
-    # Initialize total hashrate variables
-    let gpu_hs_tot=0
-    let cpu_hs_tot=0
-    let ac=0
-    let rj=0
-
-    # Parse GPU shares and SOLs separately
-    gpu_shares=$(grep "GPU" "$log_name" | grep "Shares:" | tail -n 1)
-    if [ -z "$gpu_shares" ]; then
-        gpu_shares=$(grep "GPU" "$log_name" | grep "SOL:" | tail -n 1)
-    fi
-
-    gpu_found=$(echo "$gpu_shares" | awk -F'|' '{print $2}' | awk '{print $2}' | cut -d '/' -f1)
-    gpu_submit=$(echo "$gpu_shares" | awk -F'|' '{print $2}' | awk '{print $2}' | cut -d '/' -f2)
-
-    # Ensure parsed values are not empty
-    [[ -z "$gpu_found" ]] && gpu_found=0
-    [[ -z "$gpu_submit" ]] && gpu_submit=0
-
-    let ac=$ac+$gpu_found
-    let rj=$rj+$((gpu_submit-gpu_found))
-
+    # Process GPU stats
     if [[ $gpu_count -gt 0 ]]; then
+        # Extract GPU shares information
+        gpu_shares=$(grep "GPU" "$log_name" | grep -E "Shares:|SOL:" | tail -n 1)
+        gpu_found=$(echo "$gpu_shares" | awk -F'|' '{print $2}' | awk '{print $2}' | cut -d '/' -f1)
+        gpu_submit=$(echo "$gpu_shares" | awk -F'|' '{print $2}' | awk '{print $2}' | cut -d '/' -f2)
+        [[ -z "$gpu_found" ]] && gpu_found=0
+        [[ -z "$gpu_submit" ]] && gpu_submit=0
+        let ac=$ac+$gpu_found
+        let rj=$rj+$((gpu_submit-gpu_found))
+
+        # Extract GPU temperature, fan, and bus information
         gpu_temp=$(jq '.temp' <<< "$gpu_stats")
         gpu_fan=$(jq '.fan' <<< "$gpu_stats")
         gpu_bus=$(jq '.busids' <<< "$gpu_stats")
@@ -147,9 +99,9 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
             gpu_bus=$(jq -c "del(.$cpu_indexes_array)" <<< "$gpu_bus")
         fi
 
+        # Process individual GPU data
         for (( i=0; i < ${gpu_count}; i++ )); do
             hs[$i]=$(grep -oP "GPU #$i: \K\d+(?= it/s)" "$log_name" | tail -n 1)
-            echo "Hashrate for GPU#$i: ${hs[$i]}"
             [[ -z ${hs[$i]} ]] && hs[$i]=0
             let gpu_hs_tot=$gpu_hs_tot+${hs[$i]}
             temp[$i]=$(jq .[$i] <<< "$gpu_temp")
@@ -157,73 +109,53 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
             busid=$(jq .[$i] <<< "$gpu_bus")
             bus_numbers[$i]=$(echo $busid | cut -d ":" -f1 | cut -c2- | awk -F: '{ printf "%d\n",("0x"$1) }')
         done
-
-        if [[ $gpu_hs_tot -eq 0 ]]; then
-            for (( i=0; i < ${gpu_count}; i++ )); do
-                hs[$i]=$(grep -oP "GPU #$i: \K\d+(?= it/s)" "$log_name" | tail -n 1)
-                echo "Fallback Hashrate for GPU#$i: ${hs[$i]}"
-                [[ -z ${hs[$i]} ]] && hs[$i]=0
-                let gpu_hs_tot=$gpu_hs_tot+${hs[$i]}
-            done
-        fi
     fi
 
-    # Parse CPU shares and SOLs separately
-    cpu_shares=$(grep "^CPU" "$log_name" | grep "Shares:" | tail -n 1)
-    if [ -z "$cpu_shares" ]; then
-        cpu_shares=$(grep "^CPU" "$log_name" | grep "SOL:" | tail -n 1)
-    fi
-
-    cpu_found=$(echo "$cpu_shares" | awk -F'|' '{print $2}' | awk '{print $2}' | cut -d '/' -f1)
-    cpu_submit=$(echo "$cpu_shares" | awk -F'|' '{print $2}' | awk '{print $2}' | cut -d '/' -f2)
-
-    # Ensure parsed values are not empty
-    [[ -z "$cpu_found" ]] && cpu_found=0
-    [[ -z "$cpu_submit" ]] && cpu_submit=0
-
-    let ac=$ac+$cpu_found
-    let rj=$rj+$((cpu_submit-cpu_found))
-
+    # Process CPU stats
     if [[ $cpu_count -gt 0 ]]; then
-        # Extract CPU hashrate by searching for the second '|' and getting the it/s value
+        # Extract CPU shares information
+        cpu_shares=$(grep "^CPU" "$log_name" | grep -E "Shares:|SOL:" | tail -n 1)
+        cpu_found=$(echo "$cpu_shares" | awk -F'|' '{print $2}' | awk '{print $2}' | cut -d '/' -f1)
+        cpu_submit=$(echo "$cpu_shares" | awk -F'|' '{print $2}' | awk '{print $2}' | cut -d '/' -f2)
+        [[ -z "$cpu_found" ]] && cpu_found=0
+        [[ -z "$cpu_submit" ]] && cpu_submit=0
+        let ac=$ac+$cpu_found
+        let rj=$rj+$((cpu_submit-cpu_found))
+
+        # Extract CPU hashrate
         cpu_hs=$(grep "^CPU" "$log_name" | tail -n 1 | awk -F'|' '{print $3}' | awk '{print $1}')
-        echo "Extracted CPU Hashrate: $cpu_hs"
         [[ -z $cpu_hs ]] && cpu_hs=0
-        let cpu_hs_tot=$cpu_hs_tot+$cpu_hs
+        let cpu_hs_tot=$cpu_hs
         
-        # Use index for CPU data to avoid overwriting GPU data
-        cpu_index=$gpu_count
-        hs[$cpu_index]=$cpu_hs_tot
-        temp[$cpu_index]="$cpu_temp"
-        fan[$cpu_index]=""
-        bus_numbers[$cpu_index]="null"
+        # Add CPU data to arrays
+        hs+=($cpu_hs_tot)
+        temp+=($cpu_temp)
+        fan+=("")
+        bus_numbers+=("null")
     fi
 
-    # Aggregate GPU and CPU hashrates
+    # Calculate total hashrate
     let khs=$gpu_hs_tot+$cpu_hs_tot
     khs=$(echo $khs | awk '{print $1/1000}')
 
-    echo "Calculated Total Hashrate (khs): $khs"
-    echo "Total Accepted Shares: $ac, Total Rejected Shares: $rj"
-
+    # Prepare stats JSON
     stats=$(jq -nc \
                 --arg khs "$khs" \
                 --arg hs_units "$hs_units" \
-                --argjson hs "$(echo ${hs[@]} | tr " " "\n" | jq -cs '.')" \
-                --argjson temp "$(echo ${temp[@]} | tr " " "\n" | jq -cs '.')" \
-                --argjson fan "$(echo ${fan[@]} | tr " " "\n" | jq -cs '.')" \
+                --argjson hs "$(printf '%s\n' "${hs[@]}" | jq -cs '.')" \
+                --argjson temp "$(printf '%s\n' "${temp[@]}" | jq -cs '.')" \
+                --argjson fan "$(printf '%s\n' "${fan[@]}" | jq -cs '.')" \
                 --arg uptime "$uptime" \
                 --arg ver "$ver" \
                 --arg ac "$ac" --arg rj "$rj" \
                 --arg algo "$algo" \
-                --argjson bus_numbers "$(echo ${bus_numbers[@]} | tr " " "\n" | jq -cs '.')" \
+                --argjson bus_numbers "$(printf '%s\n' "${bus_numbers[@]}" | jq -cs '.')" \
                 '{$hs, $hs_units, $temp, $fan, $uptime, $ver, ar: [$ac, $rj], $algo, $bus_numbers}')
-
 else
     stats=""
     khs=0
 fi
 
-echo "khs: $khs"
-echo "stats: $stats"
-echo "----------"
+# Output results
+echo $khs
+echo $stats
