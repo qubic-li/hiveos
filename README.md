@@ -85,9 +85,10 @@ cd /opt/rocm/lib && wget https://github.com/Gddrig/Qubic_Hiveos/releases/downloa
 ### 🔨 GPU+CPU (Dual) mining:
 ![Flight Sheet Dual](/img/FlightSheetDual.png)
 <br>
-**Extra Config Arguments Example:**
+**Extra Config Arguments Example for AVX512:**
 ```
 nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
+"trainer":{"cpu":true,"cpuVersion":"AVX512"}
 "amountOfThreads":24
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
@@ -138,6 +139,7 @@ AutoUpdate
 **Extra Config Arguments Example for AVX512:**
 ```
 "cpuOnly":true
+"trainer":{"cpu":true,"cpuVersion":"AVX512"}
 "amountOfThreads":24
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
@@ -182,8 +184,8 @@ AutoUpdate
 | ```"isPps":```  | `false` | Set this to `true` to enable `PPS` (Pay Per Share) mode. When enabled, you'll receive a fixed reward for each valid share you submit, regardless of whether a solution is found.|
 | ```"useLiveConnection":```  | `true` or `talse` | Set this to `true` to enhance backend performance, enabling instant ID switching and idling. Note: This requires a constant internet connection.
 | ```"hugePages":nnnn``` |  | Consider enabling huge pages to potentially increase iterations per second. The trainer will suggest the optimal setting based on threads * 138 (e.g., 16 threads = 2208). If the trainer becomes unstable, disable huge pages. |
+| ```"trainer":{"cpuVersion":"AVX512"}```  | | Set this to AVX512 to enforce the use of AVX512 instructions. |
 | ```"trainer":{"cpuVersion":"AVX2"}```  | | Use this setting to force the AVX2 runner on CPUs that do not support AVX512. |
-| ```"trainer":{"cpuVersion":"AVX512"}```  | | Set this to AVX512 if auto-selection does not work. |
 | ```"trainer":{"cpuVersion":"GENERIC"}```  | | If neither AVX2 or AVX512 CPU instructions are supported, use the GENERIC runner. |
 | ```"idleSettings"```  | | Set the command to target the program you want to run, and set the argument for the specific action the program needs to perform.|
 | ```AutoUpdate```  | | Enable automatic version check and installation for the miner after startup.|
