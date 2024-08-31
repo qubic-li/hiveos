@@ -58,13 +58,13 @@ process_user_config() {
             # Check if modifications were made, if not, use the original parameter
             [[ "$param" != "$modified_param" ]] && param=$modified_param
 
-            # Handle cpuOnly parameter
+            # Handle cpuOnly parameter with additional 'yes' and '"yes"' options
             if [[ "$param" == "cpuOnly" ]]; then
-                if [[ "$value" == "\"true\"" || "$value" == "true" ]]; then
+                if [[ "$value" == "\"true\"" || "$value" == "true" || "$value" == "\"yes\"" || "$value" == "yes" ]]; then
                     Settings=$(jq --arg value "true" '.cpuOnly = $value' <<< "$Settings")
                     SettingsGpu=$(jq --arg value "true" '.cpuOnly = $value' <<< "$SettingsGpu")
                 else
-                    echo "Invalid value for cpuOnly: $value. It must be '\"true\"' or 'true'. Skipping this entry."
+                    echo "Invalid value for cpuOnly: $value. It must be '\"true\"', 'true', '\"yes\"', or 'yes'. Skipping this entry."
                 fi
                 continue
             fi
