@@ -9,27 +9,30 @@ process_user_config() {
             # Local file
             LOCAL_FILE="/hive/miners/custom/downloads/qubminer-latest.tar.gz"
 
-            # URL of the remote file and its hash
-            REMOTE_FILE_URL="https://github.com/qubic-li/hiveos/releases/download/latest/qubminer-latest.tar.gz"
-            REMOTE_HASH_URL="https://github.com/qubic-li/hiveos/releases/download/latest/qubminer-latest.hash"
+			if [ -e $LOCAL_FILE ]; then
 
-            # Check the availability of the remote hash
-            if curl --output /dev/null --silent --head --fail "$REMOTE_HASH_URL"; then
-                # Download the remote hash
-                REMOTE_HASH=$(curl -s -L "$REMOTE_HASH_URL")
+				# URL of the remote file and its hash
+				REMOTE_FILE_URL="https://github.com/qubic-li/hiveos/releases/download/latest/qubminer-latest.tar.gz"
+				REMOTE_HASH_URL="https://github.com/qubic-li/hiveos/releases/download/latest/qubminer-latest.hash"
 
-                # Calculate the SHA256 hash of the local file
-                LOCAL_HASH=$(sha256sum "$LOCAL_FILE" | awk '{print $1}')
+				# Check the availability of the remote hash
+				if curl --output /dev/null --silent --head --fail "$REMOTE_HASH_URL"; then
+					# Download the remote hash
+					REMOTE_HASH=$(curl -s -L "$REMOTE_HASH_URL")
 
-                # Compare the hashes
-                if [ "$LOCAL_HASH" != "$REMOTE_HASH" ]; then
-                    echo "Hashes of local and remote ($REMOTE_FILE_URL) miners are different. Removing the local file of the miner and restarting the miner. In case you see the error multiple times, check the URL of the miner in the Flight Sheet."
-                    # Remove old local miner and restart the miner
-                    rm "$LOCAL_FILE"
-                    echo "Miner restarting in 10 sec..."
-                    screen -d -m miner restart
-                fi
-            fi
+					# Calculate the SHA256 hash of the local file
+					LOCAL_HASH=$(sha256sum "$LOCAL_FILE" | awk '{print $1}')
+
+					# Compare the hashes
+					if [ "$LOCAL_HASH" != "$REMOTE_HASH" ]; then
+						echo "Hashes of local and remote ($REMOTE_FILE_URL) miners are different. Removing the local file of the miner and restarting the miner. In case you see the error multiple times, check the URL of the miner in the Flight Sheet."
+						# Remove old local miner and restart the miner
+						rm "$LOCAL_FILE"
+						echo "Miner restarting in 10 sec..."
+						screen -d -m miner restart
+					fi
+				fi
+			fi
         else
             # Extract parameter and its value from the configuration line
             param=$(awk -F':' '{gsub(/\"/, ""); print $1}' <<< "$line")
