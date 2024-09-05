@@ -78,7 +78,12 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
     declare -a hs temp fan bus_numbers
     let gpu_hs_tot=0 cpu_hs_tot=0 ac=0 rj=0
 
-    # Process GPU stats
+    # Extract total GPU hashrate using the same logic as CPU (last line only)
+    gpu_hs=$(grep "^GPU" "$log_name" | tail -n 1 | awk -F'|' '{print $4}' | awk '{print $1}')
+    [[ -z $gpu_hs ]] && gpu_hs=0
+    let gpu_hs_tot=$gpu_hs
+
+    # Process individual GPU data
     if [[ $gpu_count -gt 0 ]]; then
         # Extract GPU shares information
         gpu_shares=$(grep "GPU" "$log_name" | grep -E "Shares:|SOL:" | tail -n 1)
@@ -99,11 +104,9 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
             gpu_bus=$(jq -c "del(.$cpu_indexes_array)" <<< "$gpu_bus")
         fi
 
-        # Process individual GPU data
         for (( i=0; i < ${gpu_count}; i++ )); do
             hs[$i]=$(grep -oP "GPU #$i: \K\d+(?= it/s)" "$log_name" | tail -n 1)
             [[ -z ${hs[$i]} ]] && hs[$i]=0
-            let gpu_hs_tot=$gpu_hs_tot+${hs[$i]}
             temp[$i]=$(jq .[$i] <<< "$gpu_temp")
             fan[$i]=$(jq .[$i] <<< "$gpu_fan")
             busid=$(jq .[$i] <<< "$gpu_bus")
@@ -122,8 +125,8 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
         let ac=$ac+$cpu_found
         let rj=$rj+$((cpu_submit-cpu_found))
 
-        # Extract CPU hashrate
-        cpu_hs=$(grep "^CPU" "$log_name" | tail -n 1 | awk -F'|' '{print $3}' | awk '{print $1}')
+        # Extract CPU hashrate using the last line only
+        cpu_hs=$(grep "^CPU" "$log_name" | tail -n 1 | awk -F'|' '{print $4}' | awk '{print $1}')
         [[ -z $cpu_hs ]] && cpu_hs=0
         let cpu_hs_tot=$cpu_hs
         
