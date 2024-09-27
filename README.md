@@ -88,17 +88,15 @@ cd /opt/rocm/lib && wget https://github.com/Gddrig/Qubic_Hiveos/releases/downloa
 **Extra Config Arguments Example for AVX512:**
 ```
 nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
-"trainer":{"cpu":true,"cpuVersion":"AVX512"}
-"amountOfThreads":24
+"trainer":{"cpu":true,"gpu":true}
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
 **Extra Config Arguments Example for AVX2:**
 ```
 nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
-"trainer":{"cpu":true,"cpuVersion":"AVX2"}
+"trainer":{"cpu":true,"gpu":true,"cpuVersion":"AVX2"}
 "amountOfThreads":24
-"accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
 
@@ -119,6 +117,7 @@ AutoUpdate
 **Extra Config Arguments Example:**
 ```
 nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
+"trainer": {"gpu":true}
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
@@ -139,8 +138,7 @@ AutoUpdate
 **Extra Config Arguments Example for AVX512:**
 ```
 "cpuOnly":true
-"trainer":{"cpu":true,"cpuVersion":"AVX512"}
-"amountOfThreads":24
+"trainer":{"cpu":true}
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
@@ -173,17 +171,15 @@ AutoUpdate
 
 
 ### ⚙️ Extra Config Arguments Box (Options):
-> [!IMPORTANT]
-> The ```"isPps"``` and ```"useLiveConnection"``` features currently only works with beta access.
 
 | Setting | Default Value |Description                                                                                                                                                                                                                                  |
 | ---- |------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ```"accessToken":``` | JWT Token | This is your personal Token, which you can obtain from the Control Panel at qubic.li. |
-|  ```"amountOfThreads":``` | `1` | How many threads should be used for the AI Training.	|
 | ```"payoutId":``` | `null` | This is the ID you want to get token payout for your found solutions. |
-| ```"isPps":```  | `false` | Set this to `true` to enable `PPS` (Pay Per Share) mode. When enabled, you'll receive a fixed reward for each valid share you submit, regardless of whether a solution is found.|
+| ```pps:```  | `true` | Set this to `false` to disable `PPS` (Pay Per Share) mode. When enabled, you'll receive a fixed reward for each valid share you submit, regardless of whether a solution is found.|
 | ```"useLiveConnection":```  | `true` or `talse` | Set this to `true` to enhance backend performance, enabling instant ID switching and idling. Note: This requires a constant internet connection.
 | ```"hugePages":nnnn``` |  | Consider enabling huge pages to potentially increase iterations per second. The trainer will suggest the optimal setting based on threads * 138 (e.g., 16 threads = 2208). If the trainer becomes unstable, disable huge pages. |
+|  ```"trainer":{"cpuThreads":32}``` | `All available -1` | How many threads should be used for the AI Training.	|
 | ```"trainer":{"cpuVersion":"AVX512"}```  | | Set this to AVX512 to enforce the use of AVX512 instructions. |
 | ```"trainer":{"cpuVersion":"AVX2"}```  | | Use this setting to force the AVX2 runner on CPUs that do not support AVX512. |
 | ```"trainer":{"cpuVersion":"GENERIC"}```  | | If neither AVX2 or AVX512 CPU instructions are supported, use the GENERIC runner. |
