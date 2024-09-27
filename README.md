@@ -76,7 +76,7 @@ cd /opt/rocm/lib && wget https://github.com/Gddrig/Qubic_Hiveos/releases/downloa
 - **Installation URL:** `https://github.com/qubic-li/hiveos/releases/download/latest/qubminer-latest.tar.gz`
 - **Hash algorithm:** Not used, leave as `----`.
 - **Wallet and worker template:** Enter your `worker name`. 
-- **Pool URL:** Use `https://mine.qubic.li/` for the pool `app.qubic.li`.
+- **Pool URL:** Use `wss://wps.qubic.li/ws` for the pool `https://pool.qubic.li/en-US/dashboard`.
 - **Pass:** Not used.
   
 > [!NOTE]
