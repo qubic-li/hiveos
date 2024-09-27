@@ -41,7 +41,7 @@ cpu_conf_name="/hive/miners/custom/qubminer/cpu/appsettings.json"
 gpu_conf_name="/hive/miners/custom/qubminer/gpu/appsettings.json"
 
 # Extract version and runner information
-custom_version=$(grep -Po "(?<=Starting Client ).*" "$log_name" | tail -n1)
+custom_version=$(grep -Po "(?<=Version ).*" "$log_name" | tail -n1)
 gpu_runner=$(grep -Po "(?<=Trainer: ).*(?= is starting)" "$log_name" | grep -i "cuda\|hip" | tail -n1)
 cpu_runner=$(grep -Po "(?<=Trainer: ).*(?= is starting)" "$log_name" | grep -i "cpu" | tail -n1)
 epoh_runner=$(grep -Po "E:\d+" "$log_name" | tail -n1)
