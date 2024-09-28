@@ -96,7 +96,6 @@ AutoUpdate
 ```
 nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
 "trainer":{"cpu":true,"gpu":true,"cpuVersion":"AVX2"}
-"amountOfThreads":24
 AutoUpdate
 ```
 
@@ -105,7 +104,6 @@ AutoUpdate
 **Sample Configuration for AMD GPU's**
 ```
 "trainer": {"gpu":true,"gpuVersion": "AMD"}
-"amountOfThreads":24
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
