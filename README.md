@@ -194,11 +194,11 @@ AutoUpdate
 
 **Extra Config Arguments Example for CPU:**
 ```json
-"idleSettings":{"command":"ping","arguments":"google.com"}
+"idleSettings":{preCommand":"ping","preCommandArguments":"-c 2 google.com","command": "ping","arguments":"google.com","postCommand":"ping","postCommandArguments":"-c 2 google.com"}
 ```
 **Extra Config Arguments Example for GPU:**
 ```json
-"idleSettings":{"gpuOnly":true,"command":"ping","arguments":"google.com"}
+"idleSettings":{"gpuOnly":true,"preCommand":"ping","preCommandArguments":"-c 2 google.com","command": "ping","arguments":"google.com","postCommand":"ping","postCommandArguments":"-c 2 google.com"}
 ```
 
 
