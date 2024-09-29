@@ -45,14 +45,14 @@ process_user_config() {
 
             # Perform replacements in the parameter
             modified_param=$(echo "$param_high" | awk '{
-                gsub("PAYOUTID", "payoutId");
+                gsub("QUBICADDRESS", "qubicAddress");
                 gsub("CPUTHREADS", "cpuThreads");
                 gsub("ACCESSTOKEN", "accessToken");
                 gsub("ALLOWHWINFOCOLLECT", "allowHwInfoCollect");
                 gsub("HUGEPAGES", "hugePages");
                 gsub("ALIAS", "alias");
                 gsub("OVERWRITES", "overwrites");
-                gsub("IDLESETTINGS", "idleSettings");
+                gsub("IDLESETTINGS", "Idling");
                 gsub("PPS=", "\"pps\": ");
                 gsub("USELIVECONNECTION", "useLiveConnection");
                 gsub("TRAINER", "trainer");
@@ -67,28 +67,28 @@ process_user_config() {
                 if [[ "$param" == "overwrites" || "$param" == "trainer" ]]; then
                     Settings=$(jq -s '.[0] * .[1]' <<< "$Settings {$line}")
                     SettingsGpu=$(jq -s '.[0] * .[1]' <<< "$SettingsGpu {$line}")
-                elif [[ "$param" == "idleSettings" ]]; then
+                elif [[ "$param" == "Idling" ]]; then
                     gpuOnly=$(jq -r '.gpuOnly // empty' <<< "$value")
                     if [[ "$gpuOnly" == "true" ]]; then
                         value=$(jq 'del(.gpuOnly)' <<< "$value")
-                        SettingsGpu=$(jq --argjson idleSettings "$value" '
-                            .idleSettings = $idleSettings | 
-                            .idleSettings.preCommand = ($idleSettings.preCommand // null) |
-                            .idleSettings.preCommandArguments = ($idleSettings.preCommandArguments // null) |
-                            .idleSettings.command = ($idleSettings.command // null) |
-                            .idleSettings.arguments = ($idleSettings.arguments // null) |
-                            .idleSettings.postCommand = ($idleSettings.postCommand // null) |
-                            .idleSettings.postCommandArguments = ($idleSettings.postCommandArguments // null)
+                        SettingsGpu=$(jq --argjson Idling "$value" '
+                            .Idling = $Idling | 
+                            .Idling.preCommand = ($Idling.preCommand // null) |
+                            .Idling.preCommandArguments = ($Idling.preCommandArguments // null) |
+                            .Idling.command = ($Idling.command // null) |
+                            .Idling.arguments = ($Idling.arguments // null) |
+                            .Idling.postCommand = ($Idling.postCommand // null) |
+                            .Idling.postCommandArguments = ($Idling.postCommandArguments // null)
                         ' <<< "$SettingsGpu")
                     else
-                        Settings=$(jq --argjson idleSettings "$value" '
-                            .idleSettings = $idleSettings | 
-                            .idleSettings.preCommand = ($idleSettings.preCommand // null) |
-                            .idleSettings.preCommandArguments = ($idleSettings.preCommandArguments // null) |
-                            .idleSettings.command = ($idleSettings.command // null) |
-                            .idleSettings.arguments = ($idleSettings.arguments // null) |
-                            .idleSettings.postCommand = ($idleSettings.postCommand // null) |
-                            .idleSettings.postCommandArguments = ($idleSettings.postCommandArguments // null)
+                        Settings=$(jq --argjson Idling "$value" '
+                            .Idling = $Idling | 
+                            .Idling.preCommand = ($Idling.preCommand // null) |
+                            .Idling.preCommandArguments = ($Idling.preCommandArguments // null) |
+                            .Idling.command = ($Idling.command // null) |
+                            .Idling.arguments = ($Idling.arguments // null) |
+                            .Idling.postCommand = ($Idling.postCommand // null) |
+                            .Idling.postCommandArguments = ($Idling.postCommandArguments // null)
                         ' <<< "$Settings")
                     fi
                 elif [[ "$param" == "accessToken" ]]; then
