@@ -164,7 +164,7 @@ AutoUpdate
 3000 series ```nvtool --setcoreoffset 250 --setclocks 1500 --setmem 5001```  
 4000 series ```nvtool --setcoreoffset 250 --setclocks 2400 --setmem 5001```  
 **High:**  
-3000 series ```nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000```  
+3000 series ```nvtool --setcoreoffset 250 --setclocks 1600 --setmem 7000 --setmemoffset 2000```  
 4000 series ```nvtool --setcoreoffset 200 --setclocks 2700 --setmem 7000 --setmemoffset 2000```  
 
 
