@@ -161,8 +161,8 @@ AutoUpdate
 
 ### Recommended GPU Overclocks:  
 
-3000 series ```nvtool --setcoreoffset 250 --setclocks 1500 --setmem 5001```  
-4000 series ```nvtool --setcoreoffset 250 --setclocks 2400 --setmem 5001```  
+3000 series ```nvtool --setcoreoffset 200 --setclocks 1600 --setmem 5001 --setmemoffset 2100```  
+4000 series ```nvtool --setcoreoffset 200 --setclocks 1650 --setmem 7001 --setmemoffset 2300```  
 
 ### ⚙️ Extra Config Arguments Box (Options):
 
