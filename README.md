@@ -153,7 +153,7 @@ AutoUpdate
 ### Miner Configuration
 
 - **Wallet and worker template:** Value of `"alias"` in `appsettings.json`.
-- **Pool URL:** Value of `"baseUrl"` in `appsettings.json`.
+- **Pool URL:** Value of `"poolAddress"` in `appsettings.json`.
 - **Extra config arguments:** Each line is merged into `appsettings.json`.
 
 ### Recommended GPU Overclocks:  
