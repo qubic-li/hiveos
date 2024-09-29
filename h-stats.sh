@@ -33,6 +33,44 @@ get_log_time_diff() {
     echo $a
 }
 
+# Function to extract and validate hashrate
+extract_and_validate_hashrate() {
+    local line="$1"
+    local hashrate=$(echo "$line" | awk -F'|' '{print $4}' | awk '{print $1}')
+    
+    if [[ $hashrate =~ ^[0-9]+(\.[0-9]+)?$ ]] && (( $(echo "$hashrate > 0" | bc -l) )); then
+        echo "$hashrate"
+    else
+        echo "0"
+    fi
+}
+
+# Function to get last valid hashrate
+get_last_valid_hashrate() {
+    local device="$1"
+    local last_lines=$(grep "^$device" "$log_name" | grep -v "Switching ID" | grep -v "Fine-tuning completed" | tail -n 10)
+    local last_hashrate=0
+    
+    while read -r line; do
+        local current_hashrate=$(extract_and_validate_hashrate "$line")
+        if (( $(echo "$current_hashrate > 0" | bc -l) )); then
+            last_hashrate=$current_hashrate
+            break
+        fi
+    done <<< "$last_lines"
+    
+    echo "$last_hashrate"
+}
+
+# Function to extract shares from a log line
+extract_shares() {
+    local line="$1"
+    local shares=$(echo "$line" | grep -oP "(SHARES|SOLS): \K\d+/\d+ \(R:\d+\)")
+    local accepted=$(echo "$shares" | cut -d'/' -f2 | cut -d' ' -f1)
+    local rejected=$(echo "$shares" | grep -oP "R:\K\d+")
+    echo "$accepted $rejected"
+}
+
 # Set file paths
 log_basename="/var/log/miner/custom/custom"
 log_name="$log_basename.log"
@@ -57,42 +95,48 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
     uptime=$(get_miner_uptime)
     [[ $uptime -lt 60 ]] && head -n 150 $log_name > $log_head_name
 
-    # Detect CPU and GPU usage
-    cpu_count=$(grep "threads are used" "$log_name" | tail -n 1 | cut -d " " -f4)
-    [[ -z "$cpu_count" ]] && grep -q "Your Alias is .*-cpu" "$log_name" && cpu_count=1
-    [[ -z "$cpu_count" ]] && cpu_count=0
-
-    gpu_count=$(grep -E "CUDA devices are used|ROCM devices are used" "$log_name" | tail -n 1 | cut -d " " -f4)
+    # Detect GPU and CPU usage
+    gpu_count=$(grep -E "\[GPU\] Trainer:" "$log_name" | tail -n 1 | grep -oP "GPU #\d+" | wc -l)
     [[ -z $gpu_count ]] && gpu_count=0
 
-    # Fallback detection if no CPU or GPU found
-    if [ $cpu_count -eq 0 ] && [ $gpu_count -eq 0 ]; then
-        grep -q "CPU" "$log_name" && cpu_count=1
-        grep -q "GPU" "$log_name" && gpu_count=1
-    fi
+    # New CPU detection method
+    cpu_count=$(grep "^CPU" "$log_name" | wc -l)
+    [[ $cpu_count -gt 0 ]] && cpu_count=1 || cpu_count=0
 
     # Get CPU temperature if CPU is used
-    [[ $cpu_count -gt 0 ]] && cpu_temp=$(cpu-temp) || cpu_temp=null
+    [[ $cpu_count -eq 1 ]] && cpu_temp=$(cpu-temp) || cpu_temp=null
 
     # Initialize arrays and counters
     declare -a hs temp fan bus_numbers
-    let gpu_hs_tot=0 cpu_hs_tot=0 ac=0 rj=0
+    let ac=0 rj=0
 
-    # Extract total GPU hashrate using the same logic as CPU (last line only)
-    gpu_hs=$(grep "^GPU" "$log_name" | tail -n 1 | awk -F'|' '{print $4}' | awk '{print $1}')
-    [[ -z $gpu_hs ]] && gpu_hs=0
-    let gpu_hs_tot=$gpu_hs
+    # Extract CPU hashrate (avg it/s)
+    cpu_hs=$(get_last_valid_hashrate "CPU")
 
-    # Process individual GPU data
+    # Extract GPU hashrate (avg it/s)
+    gpu_hs=$(get_last_valid_hashrate "GPU")
+
+    # Calculate total hashrate
+    total_hs=$(echo "$cpu_hs + $gpu_hs" | bc)
+
+    # Calculate total hashrate in khs
+    if (( $(echo "$total_hs > 0" | bc -l) )); then
+        khs=$(echo "scale=6; $total_hs / 1000" | bc)
+    else
+        khs=0
+    fi
+
+    # Process GPU data
     if [[ $gpu_count -gt 0 ]]; then
         # Extract GPU shares information
-        gpu_shares=$(grep "GPU" "$log_name" | grep -E "Shares:|SOL:" | tail -n 1)
-        gpu_found=$(echo "$gpu_shares" | awk -F'|' '{print $2}' | awk '{print $2}' | cut -d '/' -f1)
-        gpu_submit=$(echo "$gpu_shares" | awk -F'|' '{print $2}' | awk '{print $2}' | cut -d '/' -f2)
-        [[ -z "$gpu_found" ]] && gpu_found=0
-        [[ -z "$gpu_submit" ]] && gpu_submit=0
-        let ac=$ac+$gpu_found
-        let rj=$rj+$((gpu_submit-gpu_found))
+        gpu_shares=$(grep "^GPU" "$log_name" | grep -E "SHARES:|SOLS:" | tail -n 1)
+        if [[ -n "$gpu_shares" ]]; then
+            read gpu_accepted gpu_rejected <<< $(extract_shares "$gpu_shares")
+            [[ -z "$gpu_accepted" ]] && gpu_accepted=0
+            [[ -z "$gpu_rejected" ]] && gpu_rejected=0
+            let ac=$ac+$gpu_accepted
+            let rj=$rj+$gpu_rejected
+        fi
 
         # Extract GPU temperature, fan, and bus information
         gpu_temp=$(jq '.temp' <<< "$gpu_stats")
@@ -104,8 +148,11 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
             gpu_bus=$(jq -c "del(.$cpu_indexes_array)" <<< "$gpu_bus")
         fi
 
+        # Extract individual GPU hashrates from the log format
+        gpu_hashrates=$(grep "\[GPU\] Trainer:" "$log_name" | grep -v "Switching ID" | grep -v "Found a share" | grep -v "Fine-tuning completed" | tail -n 1 | grep -oP "GPU #\d+: \K\d+")
+
         for (( i=0; i < ${gpu_count}; i++ )); do
-            hs[$i]=$(grep -oP "GPU #$i: \K\d+(?= it/s)" "$log_name" | tail -n 1)
+            hs[$i]=$(echo "$gpu_hashrates" | sed -n "$((i+1))p")
             [[ -z ${hs[$i]} ]] && hs[$i]=0
             temp[$i]=$(jq .[$i] <<< "$gpu_temp")
             fan[$i]=$(jq .[$i] <<< "$gpu_fan")
@@ -115,31 +162,23 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
     fi
 
     # Process CPU stats
-    if [[ $cpu_count -gt 0 ]]; then
+    if [[ $cpu_count -eq 1 ]]; then
         # Extract CPU shares information
-        cpu_shares=$(grep "^CPU" "$log_name" | grep -E "Shares:|SOL:" | tail -n 1)
-        cpu_found=$(echo "$cpu_shares" | awk -F'|' '{print $2}' | awk '{print $2}' | cut -d '/' -f1)
-        cpu_submit=$(echo "$cpu_shares" | awk -F'|' '{print $2}' | awk '{print $2}' | cut -d '/' -f2)
-        [[ -z "$cpu_found" ]] && cpu_found=0
-        [[ -z "$cpu_submit" ]] && cpu_submit=0
-        let ac=$ac+$cpu_found
-        let rj=$rj+$((cpu_submit-cpu_found))
-
-        # Extract CPU hashrate using the last line only
-        cpu_hs=$(grep "^CPU" "$log_name" | tail -n 1 | awk -F'|' '{print $4}' | awk '{print $1}')
-        [[ -z $cpu_hs ]] && cpu_hs=0
-        let cpu_hs_tot=$cpu_hs
+        cpu_shares=$(grep "^CPU" "$log_name" | grep -E "SHARES:|SOLS:" | tail -n 1)
+        if [[ -n "$cpu_shares" ]]; then
+            read cpu_accepted cpu_rejected <<< $(extract_shares "$cpu_shares")
+            [[ -z "$cpu_accepted" ]] && cpu_accepted=0
+            [[ -z "$cpu_rejected" ]] && cpu_rejected=0
+            let ac=$ac+$cpu_accepted
+            let rj=$rj+$cpu_rejected
+        fi
         
         # Add CPU data to arrays
-        hs+=($cpu_hs_tot)
+        hs+=($cpu_hs)
         temp+=($cpu_temp)
         fan+=("")
         bus_numbers+=("null")
     fi
-
-    # Calculate total hashrate
-    let khs=$gpu_hs_tot+$cpu_hs_tot
-    khs=$(echo $khs | awk '{print $1/1000}')
 
     # Prepare stats JSON
     stats=$(jq -nc \
