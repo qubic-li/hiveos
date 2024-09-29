@@ -78,9 +78,6 @@ cd /opt/rocm/lib && wget https://github.com/Gddrig/Qubic_Hiveos/releases/downloa
 - **Wallet and worker template:** Enter your `worker name`. 
 - **Pool URL:** Use `wss://wps.qubic.li/ws` for the pool `https://pool.qubic.li/`.
 - **Pass:** Not used.
-  
-> [!NOTE]
-> Remove the `nvtool` line if you prefer to use the HiveOS dashboard for overclocking.
 
 ### 🔨 GPU+CPU (Dual) mining:
 ![Flight Sheet Dual](/img/FlightSheetDual.png)
@@ -94,6 +91,7 @@ AutoUpdate
 **Extra Config Arguments Example for AVX2:**
 ```
 "trainer":{"cpu":true,"gpu":true,"cpuVersion":"AVX2"}
+"accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
 
@@ -101,7 +99,7 @@ AutoUpdate
 
 **Sample Configuration for AMD GPU's**
 ```
-"trainer": {"gpu":true,"gpuVersion": "AMD"}
+"trainer":{"gpu":true,"gpuVersion": "AMD"}
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
@@ -112,7 +110,7 @@ AutoUpdate
 <br>
 **Extra Config Arguments Example:**
 ```
-"trainer": {"gpu":true}
+"trainer":{"gpu":true}
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
@@ -121,7 +119,7 @@ AutoUpdate
 
 **Sample Configuration for AMD GPU's**
 ```
-"trainer": {"gpu":true,"gpuVersion": "AMD"}
+"trainer":{"gpu":true,"gpuVersion": "AMD"}
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
@@ -139,7 +137,6 @@ AutoUpdate
 **Extra Config Arguments Example for AVX2:**
 ```
 "trainer":{"cpu":true,"cpuVersion":"AVX2"}
-"amountOfThreads":24
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
@@ -157,7 +154,7 @@ AutoUpdate
 ### Recommended GPU Overclocks:  
 
 3000 series ```nvtool --setcoreoffset 200 --setclocks 1600 --setmem 5001 --setmemoffset 2100```  
-4000 series ```nvtool --setcoreoffset 200 --setclocks 1650 --setmem 7001 --setmemoffset 2300```  
+4000 series ```nvtool --setcoreoffset 200 --setclocks 2650 --setmem 7001 --setmemoffset 2300```  
 
 ### ⚙️ Extra Config Arguments Box (Options):
 
@@ -170,14 +167,14 @@ AutoUpdate
 | ```"trainer":{"cpu":true,"cpuVersion":"AVX512"}```  | | Set this to AVX512 to enforce the use of AVX512 instructions. |
 | ```"trainer":{"cpu":true,"cpuVersion":"AVX2"}```  | | Use this setting to force the AVX2 runner on CPUs that do not support AVX512. |
 | ```"trainer":{"cpu":true,"cpuVersion":"GENERIC"}```  | | If neither AVX2 or AVX512 CPU instructions are supported, use the GENERIC runner. |
-| ```"idleSettings"```  | | Set the command to target the program you want to run, and set the argument for the specific action the program needs to perform.|
+| ```"Idling"```  | | Set the command to target the program you want to run, and set the argument for the specific action the program needs to perform.|
 | ```AutoUpdate```  | | Enable automatic version check and installation for the miner after startup.|
 <br>
 
 ## 🧪 Advanced Settings:
 ### Idle Time Feature
 > [!NOTE]
-> Starting September 4th, Qubic will introduce idle time every 677 ticks after 676 ticks of mining. During this idle period, you can configure your miner to run any application. The client will handle opening and closing the app. Below is a simple example for any program and miner.
+> During the Qubic idling phase, you can run another program or miner.
 
 **Extra Config Arguments Example for CPU:**
 ```json
@@ -187,6 +184,16 @@ AutoUpdate
 ```json
 "idleSettings":{"gpuOnly":true,"preCommand":"ping","preCommandArguments":"-c 2 google.com","command":"ping","arguments":"google.com","postCommand":"ping","postCommandArguments":"-c 2 google.com"}
 ```
+<br>
+
+|  Setting 		|  Description 	|
+|---	|---	|
+|  command 	|  The command/program to execute.	|
+|  arguments 	|  The arguments that should be passed to the command/program.	|
+|  preCommand 	|  A command/program to start once the idling period begins.	|
+|  preCommandArguments 	|  The arguments that should be passed to the preCommand/program.	|
+|  postCommand 	|  A command/program to start once the idling period stops.	|
+|  postCommandArguments 	|  The arguments that should be passed to the postCommand/program.	|
 
 
 
