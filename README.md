@@ -87,14 +87,14 @@ cd /opt/rocm/lib && wget https://github.com/Gddrig/Qubic_Hiveos/releases/downloa
 <br>
 **Extra Config Arguments Example for AVX512:**
 ```
-nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
+nvtool --setcoreoffset 200 --setclocks 1600 --setmem 5001 --setmemoffset 2100
 "trainer":{"cpu":true,"gpu":true}
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
 **Extra Config Arguments Example for AVX2:**
 ```
-nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
+nvtool --setcoreoffset 200 --setclocks 1600 --setmem 5001 --setmemoffset 2100
 "trainer":{"cpu":true,"gpu":true,"cpuVersion":"AVX2"}
 AutoUpdate
 ```
@@ -114,7 +114,7 @@ AutoUpdate
 <br>
 **Extra Config Arguments Example:**
 ```
-nvtool --setcoreoffset 200 --setclocks 1600 --setmem 7000 --setmemoffset 2000
+nvtool --setcoreoffset 200 --setclocks 1600 --setmem 5001 --setmemoffset 2100
 "trainer": {"gpu":true}
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
