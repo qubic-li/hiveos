@@ -160,27 +160,21 @@ AutoUpdate
 - **Extra config arguments:** Each line is merged into `appsettings.json`.
 
 ### Recommended GPU Overclocks:  
-**Medium:**  
+
 3000 series ```nvtool --setcoreoffset 250 --setclocks 1500 --setmem 5001```  
 4000 series ```nvtool --setcoreoffset 250 --setclocks 2400 --setmem 5001```  
-**High:**  
-3000 series ```nvtool --setcoreoffset 250 --setclocks 1600 --setmem 7000 --setmemoffset 2000```  
-4000 series ```nvtool --setcoreoffset 200 --setclocks 2700 --setmem 7000 --setmemoffset 2000```  
-
 
 ### ⚙️ Extra Config Arguments Box (Options):
 
 | Setting | Default Value |Description                                                                                                                                                                                                                                  |
 | ---- |------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ```"accessToken":``` | JWT Token | This is your personal Token, which you can obtain from the Control Panel at qubic.li. |
-| ```"payoutId":``` | `null` | This is the ID you want to get token payout for your found solutions. |
+| ```"qubicAddress":``` | `null` | This is the ID you want to get token payout for your found solutions. |
 | ```pps:```  | `true` | Set this to `false` to disable `PPS` (Pay Per Share) mode. When enabled, you'll receive a fixed reward for each valid share you submit, regardless of whether a solution is found.|
-| ```"useLiveConnection":```  | `true` or `talse` | Set this to `true` to enhance backend performance, enabling instant ID switching and idling. Note: This requires a constant internet connection.
-| ```"hugePages":nnnn``` |  | Consider enabling huge pages to potentially increase iterations per second. The trainer will suggest the optimal setting based on threads * 138 (e.g., 16 threads = 2208). If the trainer becomes unstable, disable huge pages. |
 |  ```"trainer":{"cpuThreads":32}``` | `All available -1` | How many threads should be used for the AI Training.	|
-| ```"trainer":{"cpuVersion":"AVX512"}```  | | Set this to AVX512 to enforce the use of AVX512 instructions. |
-| ```"trainer":{"cpuVersion":"AVX2"}```  | | Use this setting to force the AVX2 runner on CPUs that do not support AVX512. |
-| ```"trainer":{"cpuVersion":"GENERIC"}```  | | If neither AVX2 or AVX512 CPU instructions are supported, use the GENERIC runner. |
+| ```"trainer":{"cpu":true,"cpuVersion":"AVX512"}```  | | Set this to AVX512 to enforce the use of AVX512 instructions. |
+| ```"trainer":{"cpu":true,"cpuVersion":"AVX2"}```  | | Use this setting to force the AVX2 runner on CPUs that do not support AVX512. |
+| ```"trainer":{"cpu":true,"cpuVersion":"GENERIC"}```  | | If neither AVX2 or AVX512 CPU instructions are supported, use the GENERIC runner. |
 | ```"idleSettings"```  | | Set the command to target the program you want to run, and set the argument for the specific action the program needs to perform.|
 | ```AutoUpdate```  | | Enable automatic version check and installation for the miner after startup.|
 <br>
@@ -192,11 +186,11 @@ AutoUpdate
 
 **Extra Config Arguments Example for CPU:**
 ```json
-"idleSettings":{"preCommand":"ping","preCommandArguments":"-c 2 google.com","command": "ping","arguments":"google.com","postCommand":"ping","postCommandArguments":"-c 2 google.com"}
+"idleSettings":{"preCommand":"ping","preCommandArguments":"-c 2 google.com","command":"ping","arguments":"google.com","postCommand":"ping","postCommandArguments":"-c 2 google.com"}
 ```
 **Extra Config Arguments Example for GPU:**
 ```json
-"idleSettings":{"gpuOnly":true,"preCommand":"ping","preCommandArguments":"-c 2 google.com","command": "ping","arguments":"google.com","postCommand":"ping","postCommandArguments":"-c 2 google.com"}
+"idleSettings":{"gpuOnly":true,"preCommand":"ping","preCommandArguments":"-c 2 google.com","command":"ping","arguments":"google.com","postCommand":"ping","postCommandArguments":"-c 2 google.com"}
 ```
 
 
