@@ -176,13 +176,9 @@ AutoUpdate
 > [!NOTE]
 > During the Qubic idling phase, you can run another program or miner.
 
-**Extra Config Arguments Example for CPU:**
+**Extra Config Arguments Example:**
 ```json
 "idleSettings":{"preCommand":"ping","preCommandArguments":"-c 2 google.com","command":"ping","arguments":"google.com","postCommand":"ping","postCommandArguments":"-c 2 google.com"}
-```
-**Extra Config Arguments Example for GPU:**
-```json
-"idleSettings":{"gpuOnly":true,"preCommand":"ping","preCommandArguments":"-c 2 google.com","command":"ping","arguments":"google.com","postCommand":"ping","postCommandArguments":"-c 2 google.com"}
 ```
 <br>
 
