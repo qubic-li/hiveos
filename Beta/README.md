@@ -73,7 +73,7 @@ cd /opt/rocm/lib && wget https://github.com/Gddrig/Qubic_Hiveos/releases/downloa
 ## ✈️ Flight Sheet Configuration
 
 - **Miner name:** Automatically filled with the installation URL.
-- **Installation URL:** `https://github.com/qubic-li/hiveos/releases/download/latest/qubminer-latest.tar.gz`
+- **Installation URL:** `https://github.com/qubic-li/hiveos/releases/download/beta/qubminer.beta-latest.tar.gz`
 - **Hash algorithm:** Not used, leave as `----`.
 - **Wallet and worker template:** Enter your `worker name`. 
 - **Pool URL:** Use `wss://wps.qubic.li/ws` for the pool `https://pool.qubic.li/`.
