@@ -1,7 +1,7 @@
 # qubic.li - HiveOs Miner
 This is the integration of the main client from qubic.li into HiveOS.
 
-![Qubminer](/img/Header.png)
+![Qubminer](/Beta/img/Header.png)
 
 - [Qubic HiveOs Miner](#qubicli---hiveos-miner)
   - [Qubic Resources](#-qubic-resources)
@@ -80,7 +80,7 @@ cd /opt/rocm/lib && wget https://github.com/Gddrig/Qubic_Hiveos/releases/downloa
 - **Pass:** Not used.
 
 ### 🔨 GPU+CPU (Dual) mining:
-![Flight Sheet Dual](/img/FlightSheetDual.png)
+![Flight Sheet Dual](/Beta/img/FlightSheetDual.png)
 <br>
 **Extra Config Arguments Example for AVX512:**
 ```
@@ -106,7 +106,7 @@ AutoUpdate
 -->
 
 ### 🔨 GPU mining:
-![Flight Sheet GPU](/img/FlightSheetGPU.png)
+![Flight Sheet GPU](/Beta/img/FlightSheetGPU.png)
 <br>
 **Extra Config Arguments Example:**
 ```
@@ -126,7 +126,7 @@ AutoUpdate
 
 -->
 ### 🔨 CPU mining:
-![Flight Sheet CPU](/img/FlightSheetCPU.png)
+![Flight Sheet CPU](/Beta/img/FlightSheetCPU.png)
 <br>
 **Extra Config Arguments Example for AVX512:**
 ```
