@@ -190,6 +190,3 @@ AutoUpdate
 |  preCommandArguments 	|  The arguments that should be passed to the preCommand/program.	|
 |  postCommand 	|  A command/program to start once the idling period stops.	|
 |  postCommandArguments 	|  The arguments that should be passed to the postCommand/program.	|
-
-
-
