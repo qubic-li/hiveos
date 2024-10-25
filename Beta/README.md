@@ -167,7 +167,7 @@ AutoUpdate
 | ```"trainer":{"cpu":true,"cpuVersion":"AVX512"}```  | | Set this to AVX512 to enforce the use of AVX512 instructions. |
 | ```"trainer":{"cpu":true,"cpuVersion":"AVX2"}```  | | Use this setting to force the AVX2 runner on CPUs that do not support AVX512. |
 | ```"trainer":{"cpu":true,"cpuVersion":"GENERIC"}```  | | If neither AVX2 or AVX512 CPU instructions are supported, use the GENERIC runner. |
-| ```"Idling"```  | | Set the command to target the program you want to run, and set the argument for the specific action the program needs to perform.|
+| ```"idleSettings"```  | | Set the command to target the program you want to run, and set the argument for the specific action the program needs to perform.|
 | ```AutoUpdate```  | | Enable automatic version check and installation for the miner after startup.|
 <br>
 
