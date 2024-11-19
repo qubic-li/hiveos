@@ -84,13 +84,14 @@ cd /opt/rocm/lib && wget https://github.com/Gddrig/Qubic_Hiveos/releases/downloa
 <br>
 **Extra Config Arguments Example for AVX512:**
 ```
-"trainer":{"cpu":true,"gpu":true}
-"accessToken":"YOUROWNTOKEN"
+"trainer":{"cpu":true,"cpuVersion":"AVX512"}
+"amountOfThreads":0
 AutoUpdate
 ```
 **Extra Config Arguments Example for AVX2:**
 ```
-"trainer":{"cpu":true,"gpu":true,"cpuVersion":"AVX2"}
+"trainer":{"cpu":true,"cpuVersion":"AVX2"}
+"amountOfThreads":0
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
@@ -110,7 +111,6 @@ AutoUpdate
 <br>
 **Extra Config Arguments Example:**
 ```
-"trainer":{"gpu":true}
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
@@ -130,12 +130,14 @@ AutoUpdate
 <br>
 **Extra Config Arguments Example for AVX512:**
 ```
-"trainer":{"cpu":true}
+"cpuOnly":true
+"trainer":{"cpu":true,"cpuVersion":"AVX512"}
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
 ```
 **Extra Config Arguments Example for AVX2:**
 ```
+"cpuOnly":true
 "trainer":{"cpu":true,"cpuVersion":"AVX2"}
 "accessToken":"YOUROWNTOKEN"
 AutoUpdate
@@ -153,8 +155,8 @@ AutoUpdate
 
 ### Recommended GPU Overclocks:  
 
-3000 series ```nvtool --setcoreoffset 200 --setclocks 1600 --setmem 5001 --setmemoffset 2100```  
-4000 series ```nvtool --setcoreoffset 200 --setclocks 2650 --setmem 7001 --setmemoffset 2300```  
+3000 series ```nvtool --setcoreoffset 200 --setclocks 1500 --setmem 5001 --setmemoffset 2000```  
+4000 series ```nvtool --setcoreoffset 200 --setclocks 2400 --setmem 7001 --setmemoffset 2000```  
 
 ### ⚙️ Extra Config Arguments Box (Options):
 
@@ -163,7 +165,7 @@ AutoUpdate
 | ```"accessToken":``` | JWT Token | This is your personal Token, which you can obtain from the Control Panel at qubic.li. |
 | ```"qubicAddress":``` | `null` | This is the ID you want to get token payout for your found solutions. |
 | ```pps:```  | `true` | Set this to `false` to disable `PPS` (Pay Per Share) mode. When enabled, you'll receive a fixed reward for each valid share you submit, regardless of whether a solution is found.|
-|  ```"trainer":{"cpuThreads":32}``` | `All available -1` | How many threads should be used for the AI Training.	|
+|  ```"amountOfThreads":0``` | `All available -1` | How many threads should be used for the AI Training.	|
 | ```"trainer":{"cpu":true,"cpuVersion":"AVX512"}```  | | Set this to AVX512 to enforce the use of AVX512 instructions. |
 | ```"trainer":{"cpu":true,"cpuVersion":"AVX2"}```  | | Use this setting to force the AVX2 runner on CPUs that do not support AVX512. |
 | ```"trainer":{"cpu":true,"cpuVersion":"GENERIC"}```  | | If neither AVX2 or AVX512 CPU instructions are supported, use the GENERIC runner. |
