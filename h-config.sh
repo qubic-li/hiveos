@@ -44,7 +44,7 @@ process_user_config() {
             param_low=$(echo "$param" | tr '[:upper:]' '[:lower:]')
 
             # Check for CPU only mode (case-insensitive)
-            if [[ "$param_low" == "cpuonly" && ("$value" == "true" || "$value" == "\"true\"") ]]; then
+            if [[ "$param_low" == "cpuonly" && ("$value" == "true" || "$value" == "\"true\"" || "$value" == "yes" || "$value" == "\"yes\"") ]]; then
                 CPU_ONLY=true
                 continue
             fi
