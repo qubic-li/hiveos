@@ -79,7 +79,8 @@ cd /opt/rocm/lib && wget https://github.com/Gddrig/Qubic_Hiveos/releases/downloa
 ![Flight Sheet Dual](/img/FlightSheetDual.png)
 <br>
 > [!NOTE]
->"amountOfThreads":0 will use all available threads minus one. 
+>"amountOfThreads":0 will use all available threads minus one.
+> 
 **Extra Config Arguments Example:**
 ```
 "amountOfThreads":0
