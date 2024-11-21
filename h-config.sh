@@ -37,8 +37,8 @@ process_user_config() {
             line=$(echo "$line" | sed 's/^[[:space:]]*//')
 
             # Extract parameter and its value from the configuration line
-            param=$(awk -F':' '{gsub(/\"/, ""); print $1}' <<< "$line")
-            value=$(awk -F':' '{gsub(/^[[:space:]]*/, ""); print substr($0, length($1) + 2)}' <<< "$line")
+            param=$(echo "$line" | awk -F':' '{gsub(/\"/, ""); print $1}')
+            value=$(echo "$line" | awk -F':' '{gsub(/^[[:space:]]*/, ""); print substr($0, length($1) + 2)}')
 
             # Convert parameter to lowercase for cpuOnly check
             param_low=$(echo "$param" | tr '[:upper:]' '[:lower:]')
@@ -83,7 +83,7 @@ process_user_config() {
                 gsub("ALIAS", "alias");
                 gsub("OVERWRITES", "overwrites");
                 gsub("IDLESETTINGS", "Idling");
-                gsub("PPS=", "\"pps\": ");
+                gsub("PPS", "pps");
                 gsub("USELIVECONNECTION", "useLiveConnection");
                 gsub("TRAINER", "trainer");
                 print $0;
@@ -109,9 +109,9 @@ process_user_config() {
                 elif [[ "$param" == "accessToken" ]]; then
                     value=$(echo "$value" | sed 's/^"//;s/"$//')
                     Settings=$(jq --arg value "$value" '.accessToken = $value' <<< "$Settings")
-                elif [[ "$param" == "pps" || "$param" == "useLiveConnection" ]]; then
+                elif [[ "$param" == "useLiveConnection" || "$param" == "pps" ]]; then
                     if [[ "$value" == "true" || "$value" == "false" ]]; then
-                        Settings=$(jq --argjson value "$value" '.[$param] = $value' <<< "$Settings")
+                        Settings=$(jq --arg param "$param" --argjson value "$value" '.[$param] = $value' <<< "$Settings")
                     else
                         echo "Invalid value for $param: $value. It must be 'true' or 'false'. Skipping this entry."
                     fi
