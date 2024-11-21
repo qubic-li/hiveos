@@ -43,6 +43,11 @@ process_user_config() {
             # Convert parameter to lowercase for cpuOnly check
             param_low=$(echo "$param" | tr '[:upper:]' '[:lower:]')
 
+            # Handle isPps to pps conversion
+            if [[ "$param_low" == "ispps" ]]; then
+                param="pps"
+            fi
+
             # Check for CPU only mode (case-insensitive)
             if [[ "$param_low" == "cpuonly" && ("$value" == "true" || "$value" == "\"true\"" || "$value" == "yes" || "$value" == "\"yes\"") ]]; then
                 CPU_ONLY=true
@@ -57,6 +62,10 @@ process_user_config() {
 
             # Store trainer configuration if present
             if [[ "$param" == "trainer" ]]; then
+                # Convert CUDA12 to CUDA in trainer config
+                if [[ $value == *"CUDA12"* ]]; then
+                    value=$(echo "$value" | sed 's/CUDA12/CUDA/g')
+                fi
                 TRAINER_CONFIG=$line
                 continue
             fi
@@ -191,6 +200,8 @@ fi
 
 # Apply trainer configuration if it exists
 if [[ ! -z "$TRAINER_CONFIG" ]]; then
+    # Convert any CUDA12 to CUDA before applying trainer configuration
+    TRAINER_CONFIG=$(echo "$TRAINER_CONFIG" | sed 's/CUDA12/CUDA/g')
     Settings=$(jq -s '.[0] * .[1]' <<< "$Settings {$TRAINER_CONFIG}")
 fi
 
