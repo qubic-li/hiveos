@@ -11,8 +11,9 @@ This is the integration of the main client from qubic.li into HiveOS.
     - [GPU mining](#-gpu-mining)
     - [CPU mining](#-cpu-mining)
 - 🔧 [Hive Os Settings](#-hive-os-settings)
-    - [Miner Configuration](#miner-configuration)
-    - [Recommended GPU Overclocks](#recommended-gpu-overclocks)
+    - [Miner Configuration](#%EF%B8%8F-miner-configuration)
+    - [XMR Configuration](#%EF%B8%8F-xmr-configuration)
+    - [Recommended GPU Overclocks](#%EF%B8%8F-recommended-gpu-overclocks)
     - [Extra Config Arguments Box (Options)](#️-extra-config-arguments-box-options)
     - [Advanced Settings](#-advanced-settings)
 
@@ -132,17 +133,31 @@ AutoUpdate
 > [!NOTE]
 > The startup script pulls values from the flight sheet to configure the default settings (appsettings_global.json). Each time the miner starts, the appsettings.json file is recreated.
 
-### Miner Configuration
+### ⚙️ Miner Configuration
 
 - **Wallet and worker template:** Value of `"alias"` in `appsettings.json`.
 - **Pool URL:** Value of `"poolAddress"` in `appsettings.json`.
 - **Extra config arguments:** Each line is merged into `appsettings.json`.
 
-### Recommended GPU Overclocks:  
+<br>
 
-3000 series ```nvtool --setcoreoffset 200 --setclocks 1500 --setmem 5001 --setmemoffset 2000```  
-4000 series ```nvtool --setcoreoffset 200 --setclocks 2400 --setmem 7001 --setmemoffset 2000```  
+### ⚙️ XMR Configuration
 
+| Setting | Default Value |Description                                                                                                                                                                                                                                  |
+| ---- |------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ```"xmrMining"``` | `true` | Enable or disable XMR mining. |
+| ```"xmrGpu":``` | `false` | Enable or disable GPU mining. |
+| ```"xmrPool":```  | `xmr.qubic.li:3333` | Use this to connect your XMR miner to an alternative stratum server pool address.|
+|  ```"xmrCustom":``` | `null` | A string of parameters passed to XMRig (e.g., -t 1 to run an XMR instance with only one thread). [Command Line Options](https://xmrig.com/docs/miner/command-line-options)	|
+
+<br>
+
+### ⚙️ Recommended GPU Overclocks:  
+
+3000 series ```nvtool --setcoreoffset 150 --setclocks 1500 --setmem 5001 --setmemoffset 2000```  
+4000 series ```nvtool --setcoreoffset 150 --setclocks 2400 --setmem 7001 --setmemoffset 2000```  
+
+<br>
 
 ### ⚙️ Extra Config Arguments Box (Options):
 
