@@ -70,6 +70,39 @@ process_user_config() {
                 continue
             fi
 
+            # Check for XMR mining related parameters
+            if [[ "$param" == "xmrMining" ]]; then
+                if [[ "$value" == "true" || "$value" == "\"true\"" || "$value" == "yes" || "$value" == "\"yes\"" ]]; then
+                    Settings=$(jq '.xmrSettings.disable = false' <<< "$Settings")
+                elif [[ "$value" == "false" || "$value" == "\"false\"" || "$value" == "no" || "$value" == "\"no\"" ]]; then
+                    Settings=$(jq '.xmrSettings.disable = true' <<< "$Settings")
+                fi
+                continue
+            fi
+
+            if [[ "$param" == "xmrGpu" ]]; then
+                if [[ "$value" == "true" || "$value" == "\"true\"" || "$value" == "yes" || "$value" == "\"yes\"" ]]; then
+                    Settings=$(jq '.xmrSettings.enableGpu = true' <<< "$Settings")
+                elif [[ "$value" == "false" || "$value" == "\"false\"" || "$value" == "no" || "$value" == "\"no\"" ]]; then
+                    Settings=$(jq '.xmrSettings.enableGpu = false' <<< "$Settings")
+                fi
+                continue
+            fi
+
+            if [[ "$param" == "xmrPool" ]]; then
+                # Remove quotes if present
+                value=$(echo "$value" | sed 's/^"//;s/"$//')
+                Settings=$(jq --arg value "$value" '.xmrSettings.poolAddress = $value' <<< "$Settings")
+                continue
+            fi
+
+            if [[ "$param" == "xmrCustom" ]]; then
+                # Remove quotes if present
+                value=$(echo "$value" | sed 's/^"//;s/"$//')
+                Settings=$(jq --arg value "$value" '.xmrSettings.customParameters = $value' <<< "$Settings")
+                continue
+            fi
+
             # Convert parameter to uppercase for other processing
             param_high=$(echo "$param" | tr '[:lower:]' '[:upper:]')
 
