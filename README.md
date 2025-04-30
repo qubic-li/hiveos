@@ -1,5 +1,5 @@
 # qubic.li - HiveOs Miner
-This is the integration of the main client from qubic.li into HiveOS.
+This is the integration of the main client from qubic.li into HiveOS. 
 
 ![Qubminer](/img/Header.png)
 
