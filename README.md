@@ -145,10 +145,12 @@ AutoUpdate
 
 | Setting | Default Value |Description                                                                                                                                                                                                                                  |
 | ---- |------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ```"xmrMining"``` | `true` | Enable or disable XMR mining. |
-| ```"xmrGpu":``` | `false` | Enable or disable GPU mining. |
-| ```"xmrPool":```  | `xmr.qubic.li:3333` | Use this to connect your XMR miner to an alternative stratum server pool address.|
+| ```"xmrMining"``` | `true` | Enable or disable XMR mining |
+| ```"xmrGpu":``` | `false` | Enable or disable GPU mining |
+| ```"xmrPool":```  | `xmr.qubic.li:3333` | Use this to connect your XMR miner to an alternative stratum server pool address|
 |  ```"xmrCustom":``` | `null` | A string of parameters passed to XMRig (e.g., -t 1 to run an XMR instance with only one thread). [Command Line Options](https://xmrig.com/docs/miner/command-line-options)	|
+| ```"stratumBridge":```  | `true` | Enable or disable Stratum bridge|
+| ```"stratumBridgeAddress":```  | `wss://stratum.qubic.li/stratum` |  Use this to connect your custom Stratum bridge|
 
 <br>
 
