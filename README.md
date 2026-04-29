@@ -12,7 +12,6 @@ This is the integration of the main client from qubic.li into HiveOS.
     - [CPU mining](#-cpu-mining)
 - 🔧 [Hive Os Settings](#-hive-os-settings)
     - [Miner Configuration](#%EF%B8%8F-miner-configuration)
-    - [XMR Configuration](#%EF%B8%8F-xmr-configuration)
     - [Recommended GPU Overclocks](#%EF%B8%8F-recommended-gpu-overclocks)
     - [Extra Config Arguments Box (Options)](#️-extra-config-arguments-box-options)
     - [Advanced Settings](#-advanced-settings)
@@ -24,7 +23,7 @@ This is the integration of the main client from qubic.li into HiveOS.
 - [Official Qubic.li Client](https://github.com/qubic-li/client?tab=readme-ov-file#download)
 - [Qubic Website](https://web.qubic.li/)
 - [Qubic Web Wallet](https://wallet.qubic.org/)
-- [Qubic Mining Pool](https://app.qubic.li/public/)
+- [Qubic Mining Pool](https://platform.qubic.li)
 
 ## :warning: HiveOs Mandatory Installation Instructions
 - **16GB** or more RAM is recommended to enhance CPU performance.
@@ -72,7 +71,7 @@ cd /opt/rocm/lib && wget https://github.com/Gddrig/Qubic_Hiveos/releases/downloa
 - **Installation URL:** `https://github.com/qubic-li/hiveos/releases/download/latest/qubminer-latest.tar.gz`
 - **Hash algorithm:** Not used, leave as `----`.
 - **Wallet and worker template:** Enter your `worker name`. 
-- **Pool URL:** Use `wss://wps.qubic.li/ws` for the pool `https://pool.qubic.li/`.
+- **Pool URL:** Use `wss://wps.qubic.li/ws` for the pool `https://platform.qubic.li/`.
 - **Pass:** Not used.
   
 
@@ -138,19 +137,6 @@ AutoUpdate
 - **Wallet and worker template:** Value of `"alias"` in `appsettings.json`.
 - **Pool URL:** Value of `"poolAddress"` in `appsettings.json`.
 - **Extra config arguments:** Each line is merged into `appsettings.json`.
-
-<br>
-
-### ⚙️ XMR Configuration
-
-| Setting | Default Value |Description                                                                                                                                                                                                                                  |
-| ---- |------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ```"xmrMining"``` | `true` | Enable or disable XMR mining |
-| ```"xmrGpu":``` | `false` | Enable or disable GPU mining |
-| ```"xmrPool":```  | `xmr.qubic.li:3333` | Use this to connect your XMR miner to an alternative stratum server pool address|
-|  ```"xmrCustom":``` | `null` | A string of parameters passed to XMRig (e.g., -t 1 to run an XMR instance with only one thread). [Command Line Options](https://xmrig.com/docs/miner/command-line-options)	|
-| ```"stratumBridge":```  | `true` | Enable or disable Stratum bridge|
-| ```"stratumBridgeAddress":```  | `wss://stratum.qubic.li/stratum` |  Use this to connect your custom Stratum bridge|
 
 <br>
 
