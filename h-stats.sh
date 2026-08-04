@@ -75,7 +75,7 @@ extract_shares() {
 
 # Extract version and runner information
 custom_version=$(grep -Po "(?<=Version ).*" "$log_name" | tail -n1)
-gpu_runner=$(tac "$log_name" | grep -m1 -Po "(?<=Trainer: ).*?cuda.*?(?:\d+(?:\.\d+)*)(?= is (starting|running))")
+gpu_runner=$(tac "$log_name" | grep -m1 -Po "(?<=Trainer: ).*?(cuda|amd).*?(?:\d+(?:\.\d+)*)(?= is (starting|running))")
 cpu_runner=$(tac "$log_name" | grep -m1 -Po "(?<=Trainer: ).*?cpu.*?(?:\d+(?:\.\d+)*)(?= is (starting|running))")
 epoh_runner=$(grep -Po "E:\d+" "$log_name" | tail -n1)
 
@@ -114,7 +114,7 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
     # Process GPU data
     if [[ $gpu_count -gt 0 ]]; then
         # Extract GPU shares information
-        gpu_shares=$(grep "\[CUDA\]" "$log_name" | grep -E "(SHARES|SOLS):" | tail -n 1)
+        gpu_shares=$(grep -E "\[(CUDA|AMD)\]" "$log_name" | grep -E "(SHARES|SOLS):" | tail -n 1)
         if [[ -n "$gpu_shares" ]]; then
             read gpu_accepted gpu_rejected <<< $(extract_shares "$gpu_shares")
             [[ -z "$gpu_accepted" ]] && gpu_accepted=0
@@ -170,7 +170,7 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
     fi
 
     # Calculate total GPU hashrate
-    gpu_total_hs=$(tail -n 20 "$log_name" | grep -oP '\[CUDA\].*?(\d+) avg it/s' | tail -n 1 | grep -oP '\d+(?= avg it/s)')
+    gpu_total_hs=$(tail -n 20 "$log_name" | grep -oP '\[(CUDA|AMD)\].*?(\d+) avg it/s' | tail -n 1 | grep -oP '\d+(?= avg it/s)')
     gpu_total_hs=${gpu_total_hs:-0} 
     
     # Calculate total hashrate (GPU + CPU)
