@@ -7,6 +7,15 @@ if ! command -v ts &> /dev/null; then
     echo "Program ts (moreutils) - has been installed."
 fi
 
+# Load miner environment passthrough (GATEWAY, POOL_*, ...) if h-config.sh wrote one.
+# qli-Client inherits this environment and passes it down to the miner it spawns.
+if [[ -e ./qubminer.env ]]; then
+    echo "Loading miner environment from ./qubminer.env"
+    set -a
+    source ./qubminer.env
+    set +a
+fi
+
 # Check if appsettings.json exists
 if [[ -e ./appsettings.json ]]; then
     echo "Running miner"

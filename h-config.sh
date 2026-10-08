@@ -70,6 +70,14 @@ process_user_config() {
                 continue
             fi
 
+            # Store environment-variable passthrough if present (applied after the loop):
+            # written to a file that h-run.sh sources, so the vars land on the qli-Client
+            # process - e.g. "env": {"GATEWAY":"gw.farm.lan:7733"}
+            if [[ "$param_low" == "env" ]]; then
+                ENV_CONFIG=$value
+                continue
+            fi
+
             # Convert parameter to uppercase for other processing
             param_high=$(echo "$param" | tr '[:lower:]' '[:upper:]')
 
@@ -207,5 +215,33 @@ fi
 
 # Create the final settings file
 echo "{\"ClientSettings\":$Settings}" | jq . > "/hive/miners/custom/$CUSTOM_NAME/appsettings.json"
+
+# Write environment-variable passthrough for the miner.
+# h-run.sh sources this file before launching qli-Client, and qli-Client passes its
+# environment down to the miner it spawns (the gateway/proxy cluster reads GATEWAY; the
+# miner also reads POOL_BASE, POOL_DRY, POOL_MAX_TREES, ROOT_NONCE). Regenerated every
+# run, and removed when no env block is configured so stale values never linger.
+ENV_FILE="/hive/miners/custom/$CUSTOM_NAME/qubminer.env"
+rm -f "$ENV_FILE"
+if [[ ! -z "$ENV_CONFIG" ]]; then
+    if echo "$ENV_CONFIG" | jq -e 'type == "object"' >/dev/null 2>&1; then
+        echo "$ENV_CONFIG" | jq -r 'to_entries[] | "export \(.key)=\(.value|tostring|@sh)"' > "$ENV_FILE"
+        echo "Environment passthrough written to $ENV_FILE:"
+        sed 's/^/  /' "$ENV_FILE"
+    else
+        echo "WARNING: 'env' must be a JSON object like {\"GATEWAY\":\"host:7733\"} - ignoring: $ENV_CONFIG"
+    fi
+fi
+
+# Warn when a proxy rig has no GATEWAY: the miner would silently fall back to the
+# compiled-in default (192.168.2.161:7733) and the rig would sit idle.
+if echo "$TRAINER_CONFIG" | grep -qiw 'proxy'; then
+    if [[ -z "$ENV_CONFIG" ]] || ! echo "$ENV_CONFIG" | jq -e 'has("GATEWAY")' >/dev/null 2>&1; then
+        echo "WARNING: cpuCallScheme requests 'proxy' but no GATEWAY is set for this rig."
+        echo "         It will fall back to the miner dev's default gateway and likely stay idle."
+        echo "         Add this to the flight sheet's Extra config arguments:"
+        echo "           \"env\": {\"GATEWAY\":\"your-gateway-host:7733\"}"
+    fi
+fi
 
 echo "Settings created successfully."
